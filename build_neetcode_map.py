@@ -1,21 +1,30 @@
 """
 build_neetcode_map.py
-Scrapes NeetCode All (neetcode.io/practice) and produces:
-  neetcode_all_map.json  ->  { "two-sum": ["Arrays & Hashing"], ... }
-Run: python build_neetcode_map.py
+
+Scrape NeetCode "NeetCode All" practice list and generate:
+  neetcode_all_map.json -> { "two-sum": ["Arrays & Hashing"], ... }
+
+This version is hardened for modern SPA DOMs:
+- does NOT assume <a href="..."> links exist
+- extracts "/problems/<slug>" from ANY attribute (href, data-href, onclick, etc.)
+- dumps debug artifacts (HTML + screenshot) when extraction fails
+
+Env:
+  NEETCODE_DEBUG=1  -> always dump debug artifacts
 """
 
 import asyncio
 import json
+import os
 import re
 import sys
+from pathlib import Path
 
 from playwright.async_api import async_playwright
 
-NEETCODE_URL = "https://neetcode.io/practice"
-OUTPUT_FILE  = "neetcode_all_map.json"
+NEETCODE_URL = "https://neetcode.io/practice/practice/allNC"
+OUTPUT_FILE = "neetcode_all_map.json"
 
-# Canonical NeetCode category names (used as fallback / normalisation)
 CANONICAL_CATEGORIES = [
     "Arrays & Hashing",
     "Two Pointers",
@@ -38,122 +47,215 @@ CANONICAL_CATEGORIES = [
     "JavaScript",
 ]
 
+DEBUG = os.getenv("NEETCODE_DEBUG", "0") == "1"
 
-def normalise_category(raw: str) -> str:
-    """Best-effort match raw DOM text to a canonical category name."""
-    raw_clean = raw.strip()
-    for c in CANONICAL_CATEGORIES:
-        if c.lower() in raw_clean.lower() or raw_clean.lower() in c.lower():
-            return c
-    return raw_clean  # keep as-is if no match found
+
+def _dump_path(name: str) -> Path:
+    # Dump into repo workspace (GitHub Actions) or cwd (local)
+    base = Path(os.getenv("GITHUB_WORKSPACE", "."))
+    return base / name
+
+
+async def dump_debug(page) -> None:
+    """Write screenshot + HTML so we can inspect what the runner actually got."""
+    try:
+        await page.screenshot(path=str(_dump_path("neetcode_debug.png")), full_page=True)
+    except Exception as e:
+        print(f"[debug] screenshot failed: {e}")
+
+    try:
+        html = await page.content()
+        _dump_path("neetcode_debug.html").write_text(html, encoding="utf-8")
+    except Exception as e:
+        print(f"[debug] html dump failed: {e}")
+
+    try:
+        print(f"[debug] page.url={page.url}")
+        print(f"[debug] page.title={await page.title()}")
+    except Exception:
+        pass
+
+
+async def best_effort_click(page, label: str) -> bool:
+    """Click a control by exact visible text, but never fail the run if missing."""
+    try:
+        loc = page.get_by_text(label, exact=True).first
+        await loc.click(timeout=5_000)
+        await page.wait_for_timeout(750)
+        return True
+    except Exception:
+        return False
+
+
+async def expand_every_category(page) -> None:
+    """
+    Try to expand the list. NeetCode uses collapsible sections.
+    We do:
+      - click "Expand" once if present
+      - click each category heading (best-effort)
+    """
+    await best_effort_click(page, "Expand")
+
+    for cat in CANONICAL_CATEGORIES:
+        try:
+            await page.get_by_text(cat, exact=True).first.click(timeout=1_500)
+            await page.wait_for_timeout(200)
+        except Exception:
+            # Not fatal—DOM may differ.
+            pass
+
+
+async def scroll_page(page, rounds: int = 25) -> None:
+    # Many SPAs render more items only after scrolling.
+    for _ in range(rounds):
+        await page.mouse.wheel(0, 3000)
+        await page.wait_for_timeout(250)
+    # Also try End/Home (sometimes the scroll container listens to keys)
+    try:
+        await page.keyboard.press("End")
+        await page.wait_for_timeout(500)
+        await page.keyboard.press("Home")
+        await page.wait_for_timeout(500)
+        await page.keyboard.press("End")
+        await page.wait_for_timeout(500)
+    except Exception:
+        pass
 
 
 async def scrape() -> dict[str, list[str]]:
-    result: dict[str, list[str]] = {}
-
     async with async_playwright() as pw:
-        browser = await pw.chromium.launch(headless=True)
-        page    = await browser.new_page(
+        browser = await pw.chromium.launch(
+            headless=True,
+            args=[
+                "--no-sandbox",
+                "--disable-dev-shm-usage",
+                "--disable-blink-features=AutomationControlled",
+            ],
+        )
+
+        context = await browser.new_context(
             user_agent=(
                 "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 "
                 "(KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36"
-            )
+            ),
+            locale="en-US",
+            timezone_id="UTC",
+            viewport={"width": 1400, "height": 900},
         )
+
+        # Stealth-ish: hide navigator.webdriver
+        await context.add_init_script(
+            "Object.defineProperty(navigator, 'webdriver', {get: () => undefined});"
+        )
+
+        page = await context.new_page()
+
+        if DEBUG:
+            page.on("console", lambda msg: print(f"[browser console] {msg.type}: {msg.text}"))
+            page.on("pageerror", lambda err: print(f"[browser pageerror] {err}"))
 
         print(f"[build_neetcode_map] Navigating to {NEETCODE_URL} ...")
-        await page.goto(NEETCODE_URL, wait_until="networkidle", timeout=90_000)
+        await page.goto(NEETCODE_URL, wait_until="networkidle", timeout=120_000)
+        await page.wait_for_timeout(3_000)
 
-        # Give Angular/React a moment to finish rendering
-        await page.wait_for_timeout(4_000)
+        # Expand/click categories and scroll to force rendering
+        await expand_every_category(page)
+        await scroll_page(page)
 
-        # Wait until at least one LeetCode problem link is visible
-        try:
-            await page.wait_for_selector(
-                "a[href*='leetcode.com/problems']", timeout=30_000
-            )
-        except Exception:
-            print("[build_neetcode_map] WARNING: no LeetCode links found after 30s")
+        # Extract categories + problem slugs by scanning attributes of all elements
+        raw_map = await page.evaluate(
+            f"""() => {{
+  const CANON = {json.dumps(CANONICAL_CATEGORIES)};
 
-        # ------------------------------------------------------------------ #
-        # Core extraction via JavaScript running inside the browser context.  #
-        # Strategy:                                                            #
-        #   1. Collect all category headings (h2 / h3 / elements whose        #
-        #      text matches a known category).                                 #
-        #   2. For each LeetCode problem link, walk up the DOM until we find  #
-        #      the closest category container.                                 #
-        # ------------------------------------------------------------------ #
-        raw_map: dict = await page.evaluate(
-            """() => {
-            const result = {};
+  function norm(s) {{
+    return (s || "").replace(/\\s+/g, " ").trim();
+  }}
 
-            // Helper: extract slug from a leetcode URL
-            function getSlug(href) {
-                const m = href.match(/leetcode\\.com\\/problems\\/([^\\/\\?#]+)/);
-                return m ? m[1] : null;
-            }
+  function slugFromAnyValue(v) {{
+    if (!v) return null;
+    const m = String(v).match(/problems\\/([^\\/\\?#]+)/);
+    return m ? m[1] : null;
+  }}
 
-            // Collect ALL elements that look like category headings
-            // NeetCode uses h3 tags with the category name, sometimes wrapped
-            // in a div/td with a class like "group-name" or similar.
-            const headingSelectors = [
-                'h1', 'h2', 'h3', 'h4',
-                '[class*="group"]',
-                '[class*="category"]',
-                '[class*="section-title"]',
-                '[class*="table-title"]',
-            ];
-            const allHeadings = Array.from(
-                document.querySelectorAll(headingSelectors.join(','))
-            ).filter(el => el.textContent.trim().length > 0);
+  // Locate category headings by text match and record vertical position.
+  // We look at lots of elements because headings might be <div>/<button>/<h3>, etc.
+  const els = Array.from(document.querySelectorAll("body *"));
 
-            // Build an ordered list of {el, text, top} for fast lookup
-            const headings = allHeadings.map(el => ({
-                el,
-                text: el.textContent.trim(),
-                top: el.getBoundingClientRect().top + window.scrollY,
-            }));
+  const headings = [];
+  for (const el of els) {{
+    const t = norm(el.textContent);
+    if (!t) continue;
+    const hit = CANON.find(c => t === c);
+    if (!hit) continue;
 
-            // Sort headings top-to-bottom
-            headings.sort((a, b) => a.top - b.top);
+    const rect = el.getBoundingClientRect();
+    headings.push({{
+      category: hit,
+      top: rect.top + window.scrollY
+    }});
+  }}
+  headings.sort((a,b) => a.top - b.top);
 
-            // For each problem link, find the heading immediately above it
-            const links = Array.from(
-                document.querySelectorAll('a[href*="leetcode.com/problems"]')
-            );
+  // Scan ALL elements for ANY attribute containing "problems/<slug>"
+  const problems = [];
+  for (const el of els) {{
+    const rect = el.getBoundingClientRect();
+    const top = rect.top + window.scrollY;
 
-            links.forEach(link => {
-                const href  = link.getAttribute('href') || '';
-                const slug  = getSlug(href);
-                if (!slug) return;
+    // Standard attributes
+    for (const attr of el.getAttributeNames ? el.getAttributeNames() : []) {{
+      const val = el.getAttribute(attr);
+      const slug = slugFromAnyValue(val);
+      if (slug) problems.push({{ slug, top }});
+    }}
 
-                const linkTop = link.getBoundingClientRect().top + window.scrollY;
+    // Sometimes frameworks store navigation in properties:
+    // try common ones very carefully
+    const any = el;
+    const candidates = [any.href, any.to, any.pathname];
+    for (const v of candidates) {{
+      const slug = slugFromAnyValue(v);
+      if (slug) problems.push({{ slug, top }});
+    }}
+  }}
 
-                // Find the last heading whose top <= linkTop
-                let category = null;
-                for (let i = headings.length - 1; i >= 0; i--) {
-                    if (headings[i].top <= linkTop) {
-                        category = headings[i].text;
-                        break;
-                    }
-                }
-                if (!category) category = 'Uncategorized';
+  // Build mapping: assign each problem to nearest heading above it
+  const result = {{}};
+  for (const p of problems) {{
+    let cat = null;
+    for (let i = headings.length - 1; i >= 0; i--) {{
+      if (headings[i].top <= p.top) {{
+        cat = headings[i].category;
+        break;
+      }}
+    }}
+    if (!cat) cat = "Uncategorized";
+    if (!result[p.slug]) result[p.slug] = [];
+    if (!result[p.slug].includes(cat)) result[p.slug].push(cat);
+  }}
 
-                if (!result[slug]) result[slug] = [];
-                if (!result[slug].includes(category)) result[slug].push(category);
-            });
-
-            return result;
-        }"""
+  return {{
+    headingsCount: headings.length,
+    problemsFound: problems.length,
+    map: result
+  }};
+}}"""
         )
+
+        mapping: dict[str, list[str]] = raw_map["map"]
+        slugs = list(mapping.keys())
+
+        print(
+            f"[build_neetcode_map] headings={raw_map['headingsCount']} "
+            f"problemElements={raw_map['problemsFound']} uniqueSlugs={len(slugs)}"
+        )
+
+        if DEBUG or len(slugs) == 0:
+            await dump_debug(page)
 
         await browser.close()
 
-    # Normalise category names
-    normalised: dict[str, list[str]] = {}
-    for slug, cats in raw_map.items():
-        normalised[slug] = [normalise_category(c) for c in cats]
-
-    return normalised
+        return mapping
 
 
 def main() -> None:
@@ -163,16 +265,12 @@ def main() -> None:
         print("[build_neetcode_map] ERROR: extracted 0 problems. Aborting.")
         sys.exit(1)
 
-    with open(OUTPUT_FILE, "w", encoding="utf-8") as fh:
-        json.dump(mapping, fh, indent=2, sort_keys=True)
-
-    total_problems  = len(mapping)
-    total_category_assignments = sum(len(v) for v in mapping.values())
-    print(
-        f"[build_neetcode_map] Done. "
-        f"{total_problems} slugs, "
-        f"{total_category_assignments} category assignments → {OUTPUT_FILE}"
+    Path(OUTPUT_FILE).write_text(
+        json.dumps(mapping, indent=2, sort_keys=True),
+        encoding="utf-8",
     )
+
+    print(f"[build_neetcode_map] Wrote {len(mapping)} slugs to {OUTPUT_FILE}")
 
 
 if __name__ == "__main__":
