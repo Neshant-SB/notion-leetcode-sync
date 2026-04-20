@@ -1,0 +1,30 @@
+name: Sync LeetCode → Notion (cookie-free)
+
+on:
+  schedule:
+    - cron: "*/10 * * * *"
+  workflow_dispatch: {}
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install deps
+        run: |
+          pip install --upgrade pip
+          pip install requests python-dateutil
+
+      - name: Run sync
+        env:
+          NOTION_TOKEN:       ${{ secrets.NOTION_TOKEN }}
+          NOTION_DATABASE_ID: ${{ secrets.NOTION_DATABASE_ID }}
+          LEETCODE_USERNAME:  ${{ secrets.LEETCODE_USERNAME }}
+        run: python sync.py sync --recent-limit 20
