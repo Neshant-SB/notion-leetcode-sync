@@ -25,32 +25,44 @@ from dateutil import tz
 # ──────────────────────────────────────────────
 # Constants
 # ──────────────────────────────────────────────
-NOTION_VERSION  = "2022-06-28"
-NOTION_API      = "https://api.notion.com/v1"
-LC_GRAPHQL      = "https://leetcode.com/graphql"
-NC_MAP_FILE     = "neetcode_all_map.json"
+NOTION_VERSION_DEFAULT = "2022-06-28"
+NOTION_API = "https://api.notion.com/v1"
+LC_GRAPHQL = "https://leetcode.com/graphql"
+
+NC_MAP_FILE = "neetcode_all_map.json"   # built from https://neetcode.io/practice/practice/allNC
+TUF_MAP_FILE = "tuf_map.json"           # optional (only if you create it)
 
 UA = (
     "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 "
     "(KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36"
 )
 
-# ── Notion property names (must match your DB exactly) ──
-P_NAME       = "Name"
-P_ID         = "Problem ID"
-P_DIFFICULTY = "Difficulty"
-P_STATUS     = "Status"
-P_COMPLETED  = "Completed date"
-P_CATEGORY   = "Category"
-P_TOPICS     = "Topics"
-P_TAGS       = "Tags"
-P_SLUG       = "Slug"
-P_URL        = "LeetCode URL"
-
+# ── Notion property names (must match your DB exactly if present) ──
+P_NAME = "Name"                 # title (auto-detected if different)
+P_ID = "Problem ID"             # number
+P_DIFFICULTY = "Difficulty"     # select
+P_STATUS = "Status"             # status OR select
+P_COMPLETED = "Completed date"  # date
+P_CATEGORY = "Category"         # select
+P_TOPICS = "Topics"             # multi_select
+P_NC_TAGS = "NC Tags"           # multi_select  (NeetCode categories from allNC)
+P_TUF_TAGS = "TUF Tags"         # multi_select  (optional mapping)
+P_SLUG = "Slug"                 # rich_text
+P_URL = "LeetCode URL"          # url
 
 # ──────────────────────────────────────────────
 # Helpers
 # ──────────────────────────────────────────────
+_WARNED: set[str] = set()
+
+
+def warn_once(msg: str) -> None:
+    if msg in _WARNED:
+        return
+    _WARNED.add(msg)
+    print(msg)
+
+
 def mustenv(name: str) -> str:
     v = os.environ.get(name, "").strip()
     if not v:
@@ -68,31 +80,91 @@ def unix_to_iso(ts: int | str) -> str:
     return dt.date().isoformat()
 
 
-def load_nc_map() -> dict[str, list[str]]:
-    p = Path(NC_MAP_FILE)
+def _load_map_file(path: str, label: str) -> dict[str, list[str]]:
+    p = Path(path)
     if not p.exists():
-        print(f"[sync] WARNING: {NC_MAP_FILE} not found – Tags will be empty.")
+        print(f"[sync] WARNING: {path} not found – {label} will be empty.")
         return {}
     with p.open(encoding="utf-8") as fh:
-        return json.load(fh)
+        data = json.load(fh)
+    if not isinstance(data, dict):
+        print(f"[sync] WARNING: {path} is not a JSON object – {label} will be empty.")
+        return {}
+    return data
+
+
+def load_nc_map() -> dict[str, list[str]]:
+    return _load_map_file(NC_MAP_FILE, "NC Tags")
+
+
+def load_tuf_map() -> dict[str, list[str]]:
+    return _load_map_file(TUF_MAP_FILE, "TUF Tags")
 
 
 # ──────────────────────────────────────────────
 # Notion client
 # ──────────────────────────────────────────────
+def notion_version() -> str:
+    # Allow override without code changes
+    return optenv("NOTION_VERSION", NOTION_VERSION_DEFAULT)
+
+
 def notion_headers(token: str) -> dict:
     return {
         "Authorization": f"Bearer {token}",
-        "Notion-Version": NOTION_VERSION,
+        "Notion-Version": notion_version(),
         "Content-Type": "application/json",
     }
 
 
+def notion_retrieve_database(token: str, db_id: str) -> dict:
+    r = requests.get(
+        f"{NOTION_API}/databases/{db_id}",
+        headers=notion_headers(token),
+        timeout=60,
+    )
+    if not r.ok:
+        try:
+            print("[notion] retrieve database failed:", r.status_code, r.json())
+        except Exception:
+            print("[notion] retrieve database failed:", r.status_code, r.text)
+        r.raise_for_status()
+    return r.json()
+
+
+def notion_get_db_props(token: str, db_id: str) -> dict:
+    db = notion_retrieve_database(token, db_id)
+    props = db.get("properties", {}) or {}
+    summary = {k: (v or {}).get("type") for k, v in props.items()}
+    print("[notion] Database schema (name -> type):")
+    print(json.dumps(summary, indent=2, sort_keys=True))
+    return props
+
+
+def db_title_prop_name(db_props: dict) -> str:
+    for name, obj in (db_props or {}).items():
+        if (obj or {}).get("type") == "title":
+            return name
+    return P_NAME
+
+
+def option_exists(prop_def: dict, option_name: str) -> bool:
+    try:
+        t = prop_def["type"]
+        opts = (prop_def.get(t) or {}).get("options") or []
+        if not opts:
+            return True
+        return any((o.get("name") == option_name) for o in opts)
+    except Exception:
+        return True
+
+
 def notion_query_all(token: str, db_id: str) -> list[dict]:
-    url     = f"{NOTION_API}/databases/{db_id}/query"
+    url = f"{NOTION_API}/databases/{db_id}/query"
     headers = notion_headers(token)
-    pages   = []
+    pages: list[dict] = []
     payload: dict = {"page_size": 100}
+
     while True:
         r = requests.post(url, headers=headers, json=payload, timeout=60)
         r.raise_for_status()
@@ -101,6 +173,7 @@ def notion_query_all(token: str, db_id: str) -> list[dict]:
         if not data.get("has_more"):
             break
         payload["start_cursor"] = data["next_cursor"]
+
     return pages
 
 
@@ -114,21 +187,21 @@ def _date_value(page: dict, prop: str) -> str | None:
     return d.get("start") if d else None
 
 
-def notion_index_pages(pages: list[dict]) -> dict[str, dict]:
-    """Returns {slug: {page_id, completed}}"""
+def notion_index_pages(pages: list[dict], slug_prop: str, completed_prop: str) -> dict[str, dict]:
     index: dict[str, dict] = {}
     for p in pages:
-        slug = _rich_text_value(p, P_SLUG)
+        slug = _rich_text_value(p, slug_prop) if slug_prop else ""
         if slug:
             index[slug] = {
-                "page_id":   p["id"],
-                "completed": _date_value(p, P_COMPLETED),
+                "page_id": p["id"],
+                "completed": _date_value(p, completed_prop) if completed_prop else None,
             }
     return index
 
 
 def notion_upsert(token: str, db_id: str, page_id: str | None, props: dict) -> dict:
     headers = notion_headers(token)
+
     if page_id is None:
         r = requests.post(
             f"{NOTION_API}/pages",
@@ -143,22 +216,31 @@ def notion_upsert(token: str, db_id: str, page_id: str | None, props: dict) -> d
             json={"properties": props},
             timeout=60,
         )
-    r.raise_for_status()
+
+    if not r.ok:
+        print("[notion] ERROR upsert failed")
+        print("[notion] status:", r.status_code)
+        try:
+            print("[notion] response:", json.dumps(r.json(), indent=2))
+        except Exception:
+            print("[notion] response text:", r.text)
+        print("[notion] sent property keys:", sorted(list((props or {}).keys())))
+        r.raise_for_status()
+
     return r.json()
 
 
 # ──────────────────────────────────────────────
 # LeetCode GraphQL
 # ──────────────────────────────────────────────
-def lc_post(query: str, variables: dict,
-            session: str | None = None,
-            csrf: str | None = None) -> dict:
+def lc_post(query: str, variables: dict, session: str | None = None, csrf: str | None = None) -> dict:
     headers: dict = {"Content-Type": "application/json", "User-Agent": UA}
     cookies = None
     if session and csrf:
         headers["x-csrftoken"] = csrf
-        headers["Referer"]     = "https://leetcode.com/"
+        headers["Referer"] = "https://leetcode.com/"
         cookies = {"LEETCODE_SESSION": session, "csrftoken": csrf}
+
     r = requests.post(
         LC_GRAPHQL,
         headers=headers,
@@ -229,37 +311,33 @@ def fetch_recent_ac(username: str, limit: int) -> list[dict]:
 
 def fetch_problem_detail(slug: str) -> dict:
     data = lc_post(_Q_DETAIL, {"titleSlug": slug})
-    q    = data.get("question")
+    q = data.get("question")
     if not q:
         raise RuntimeError(f"No question returned for slug '{slug}'")
     return {
         "frontendQuestionId": int(q["questionFrontendId"]),
-        "difficulty":         q["difficulty"],
-        "title":              q["title"],
-        "titleSlug":          q["titleSlug"],
-        "topicTags":          q.get("topicTags") or [],
-        "categoryTitle":      q.get("categoryTitle"),
+        "difficulty": q["difficulty"],
+        "title": q["title"],
+        "titleSlug": q["titleSlug"],
+        "topicTags": q.get("topicTags") or [],
+        "categoryTitle": q.get("categoryTitle"),
     }
 
 
 def fetch_all_solved_slugs(session: str, csrf: str) -> list[str]:
-    """
-    Authenticated scan of the full problem list.
-    Returns slugs where status == 'ac' (Accepted / solved by the logged-in user).
-    """
     solved: list[str] = []
-    skip   = 0
-    limit  = 100
+    skip = 0
+    limit = 100
     total: int | None = None
 
     while total is None or skip < total:
-        data  = lc_post(_Q_LIST, {
-            "categorySlug": "",
-            "skip":   skip,
-            "limit":  limit,
-            "filters": {},
-        }, session=session, csrf=csrf)
-        lst   = data["problemsetQuestionList"]
+        data = lc_post(
+            _Q_LIST,
+            {"categorySlug": "", "skip": skip, "limit": limit, "filters": {}},
+            session=session,
+            csrf=csrf,
+        )
+        lst = data["problemsetQuestionList"]
         total = int(lst["total"])
         for q in lst["questions"]:
             if q.get("status") == "ac" and q.get("titleSlug"):
@@ -271,16 +349,12 @@ def fetch_all_solved_slugs(session: str, csrf: str) -> list[str]:
 
 
 def fetch_earliest_ac_date(slug: str, session: str, csrf: str) -> str | None:
-    """
-    Best-effort: hit /api/submissions/<slug> and find the earliest
-    Accepted submission timestamp.
-    """
     url = f"https://leetcode.com/api/submissions/{slug}"
-    r   = requests.get(
+    r = requests.get(
         url,
         headers={
             "User-Agent": UA,
-            "Referer":    f"https://leetcode.com/problems/{slug}/submissions/",
+            "Referer": f"https://leetcode.com/problems/{slug}/submissions/",
             "x-csrftoken": csrf,
         },
         cookies={"LEETCODE_SESSION": session, "csrftoken": csrf},
@@ -289,7 +363,7 @@ def fetch_earliest_ac_date(slug: str, session: str, csrf: str) -> str | None:
     r.raise_for_status()
     subs = r.json().get("submissions_dump") or []
 
-    accepted_ts = []
+    accepted_ts: list[int] = []
     for s in subs:
         if s.get("status_display") == "Accepted":
             ts = s.get("timestamp") or s.get("time")
@@ -305,39 +379,80 @@ def fetch_earliest_ac_date(slug: str, session: str, csrf: str) -> str | None:
 
 
 # ──────────────────────────────────────────────
-# Notion property builder
+# Notion property builder (schema-aware)
 # ──────────────────────────────────────────────
 def build_props(
-    problem:        dict,
-    nc_map:         dict[str, list[str]],
+    problem: dict,
+    nc_map: dict[str, list[str]],
+    tuf_map: dict[str, list[str]],
     completed_date: str | None,
+    db_props: dict,
 ) -> dict:
-    topics = [
-        {"name": t["name"]}
-        for t in (problem.get("topicTags") or [])
-        if t.get("name")
-    ]
+    def has(prop: str) -> bool:
+        return prop in db_props
 
-    # Tags = NeetCode All categories for this problem
+    def typ(prop: str) -> str | None:
+        return (db_props.get(prop) or {}).get("type")
+
+    props: dict = {}
+
+    # Title property (auto-detected)
+    title_prop = db_title_prop_name(db_props)
+    if typ(title_prop) == "title":
+        props[title_prop] = {"title": [{"text": {"content": problem["title"]}}]}
+    else:
+        raise RuntimeError(
+            f"Could not detect a valid Notion title property. Detected: {title_prop} type={typ(title_prop)}"
+        )
+
+    if has(P_ID) and typ(P_ID) == "number":
+        props[P_ID] = {"number": int(problem["frontendQuestionId"])}
+
+    if has(P_DIFFICULTY) and typ(P_DIFFICULTY) == "select":
+        props[P_DIFFICULTY] = {"select": {"name": problem["difficulty"]}}
+
+    if has(P_SLUG) and typ(P_SLUG) == "rich_text":
+        props[P_SLUG] = {"rich_text": [{"text": {"content": problem["titleSlug"]}}]}
+
+    if has(P_URL) and typ(P_URL) == "url":
+        props[P_URL] = {"url": f"https://leetcode.com/problems/{problem['titleSlug']}/"}
+
+    topics = [{"name": t["name"]} for t in (problem.get("topicTags") or []) if t.get("name")]
+    if has(P_TOPICS) and typ(P_TOPICS) == "multi_select":
+        props[P_TOPICS] = {"multi_select": topics}
+
+    # NC Tags (from https://neetcode.io/practice/practice/allNC map)
     nc_cats = nc_map.get(problem["titleSlug"], [])
-    tags    = [{"name": c} for c in nc_cats]
+    if has(P_NC_TAGS) and typ(P_NC_TAGS) == "multi_select":
+        props[P_NC_TAGS] = {"multi_select": [{"name": c} for c in nc_cats]}
+    elif has(P_NC_TAGS):
+        warn_once(f"[notion] NOTE: '{P_NC_TAGS}' exists but is type '{typ(P_NC_TAGS)}' (expected multi_select). Skipping.")
 
-    props: dict = {
-        P_NAME:       {"title": [{"text": {"content": problem["title"]}}]},
-        P_ID:         {"number": int(problem["frontendQuestionId"])},
-        P_DIFFICULTY: {"select": {"name": problem["difficulty"]}},
-        P_SLUG:       {"rich_text": [{"text": {"content": problem["titleSlug"]}}]},
-        P_URL:        {"url": f"https://leetcode.com/problems/{problem['titleSlug']}/"},
-        P_TOPICS:     {"multi_select": topics},
-        P_TAGS:       {"multi_select": tags},
-    }
+    # TUF Tags (optional map)
+    tuf_cats = tuf_map.get(problem["titleSlug"], [])
+    if has(P_TUF_TAGS) and typ(P_TUF_TAGS) == "multi_select":
+        props[P_TUF_TAGS] = {"multi_select": [{"name": c} for c in tuf_cats]}
+    elif has(P_TUF_TAGS):
+        warn_once(f"[notion] NOTE: '{P_TUF_TAGS}' exists but is type '{typ(P_TUF_TAGS)}' (expected multi_select). Skipping.")
 
-    if problem.get("categoryTitle"):
+    if problem.get("categoryTitle") and has(P_CATEGORY) and typ(P_CATEGORY) == "select":
         props[P_CATEGORY] = {"select": {"name": problem["categoryTitle"]}}
 
-    if completed_date:
+    if completed_date and has(P_COMPLETED) and typ(P_COMPLETED) == "date":
         props[P_COMPLETED] = {"date": {"start": completed_date}}
-        props[P_STATUS]    = {"status": {"name": "Done"}}
+
+    # Status (status OR select). Only set when completed_date is known.
+    if completed_date and has(P_STATUS):
+        t = typ(P_STATUS)
+        if t == "status":
+            if option_exists(db_props[P_STATUS], "Done"):
+                props[P_STATUS] = {"status": {"name": "Done"}}
+            else:
+                warn_once("[notion] NOTE: Status is type 'status' but option 'Done' not found. Skipping Status.")
+        elif t == "select":
+            props[P_STATUS] = {"select": {"name": "Done"}}
+        else:
+            warn_once(f"[notion] NOTE: '{P_STATUS}' exists but is type '{t}' (expected status/select). Skipping.")
 
     return props
 
@@ -346,12 +461,14 @@ def build_props(
 # Core upsert helper
 # ──────────────────────────────────────────────
 def upsert(
-    slug:           str,
+    slug: str,
     completed_date: str | None,
-    nc_map:         dict[str, list[str]],
-    notion_token:   str,
-    notion_db:      str,
-    notion_index:   dict[str, dict],
+    nc_map: dict[str, list[str]],
+    tuf_map: dict[str, list[str]],
+    notion_token: str,
+    notion_db: str,
+    notion_index: dict[str, dict],
+    db_props: dict,
 ) -> None:
     try:
         problem = fetch_problem_detail(slug)
@@ -359,23 +476,20 @@ def upsert(
         print(f"[sync] SKIP {slug}: could not fetch detail – {exc}")
         return
 
-    existing  = notion_index.get(slug)
-    page_id   = existing["page_id"] if existing else None
-    props     = build_props(problem, nc_map, completed_date)
+    existing = notion_index.get(slug)
+    page_id = existing["page_id"] if existing else None
+
+    props = build_props(problem, nc_map, tuf_map, completed_date, db_props)
 
     # Never overwrite an existing completed date
     if existing and existing.get("completed") and completed_date:
         props.pop(P_COMPLETED, None)
-        props.pop(P_STATUS,    None)
+        props.pop(P_STATUS, None)
 
     result = notion_upsert(notion_token, notion_db, page_id, props)
 
-    # Update local index so duplicate slugs in the same run don't create twice
     if slug not in notion_index:
-        notion_index[slug] = {
-            "page_id":   result["id"],
-            "completed": completed_date,
-        }
+        notion_index[slug] = {"page_id": result["id"], "completed": completed_date}
 
     action = "updated" if page_id else "created"
     print(f"[sync] {action}: {problem['title']} ({slug})")
@@ -386,13 +500,20 @@ def upsert(
 # ──────────────────────────────────────────────
 def cmd_sync(args: argparse.Namespace) -> None:
     notion_token = mustenv("NOTION_TOKEN")
-    notion_db    = mustenv("NOTION_DATABASE_ID").replace("-", "")
-    username     = mustenv("LEETCODE_USERNAME")
-    nc_map       = load_nc_map()
+    notion_db = mustenv("NOTION_DATABASE_ID").replace("-", "")
+    username = mustenv("LEETCODE_USERNAME")
+
+    nc_map = load_nc_map()
+    tuf_map = load_tuf_map()
+
+    db_props = notion_get_db_props(notion_token, notion_db)
+
+    slug_prop = P_SLUG if (db_props.get(P_SLUG) or {}).get("type") == "rich_text" else ""
+    completed_prop = P_COMPLETED if (db_props.get(P_COMPLETED) or {}).get("type") == "date" else ""
 
     print("[sync] Querying Notion index …")
-    pages        = notion_query_all(notion_token, notion_db)
-    notion_index = notion_index_pages(pages)
+    pages = notion_query_all(notion_token, notion_db)
+    notion_index = notion_index_pages(pages, slug_prop, completed_prop)
     print(f"[sync] {len(notion_index)} existing pages indexed.")
 
     print(f"[sync] Fetching last {args.recent_limit} accepted submissions for '{username}' …")
@@ -400,9 +521,9 @@ def cmd_sync(args: argparse.Namespace) -> None:
     print(f"[sync] {len(recent)} recent AC submissions found.")
 
     for item in recent:
-        slug      = item["titleSlug"]
+        slug = item["titleSlug"]
         completed = unix_to_iso(item["timestamp"])
-        upsert(slug, completed, nc_map, notion_token, notion_db, notion_index)
+        upsert(slug, completed, nc_map, tuf_map, notion_token, notion_db, notion_index, db_props)
         time.sleep(0.3)
 
     print("[sync] Done.")
@@ -410,15 +531,22 @@ def cmd_sync(args: argparse.Namespace) -> None:
 
 def cmd_backfill(args: argparse.Namespace) -> None:
     notion_token = mustenv("NOTION_TOKEN")
-    notion_db    = mustenv("NOTION_DATABASE_ID").replace("-", "")
-    username     = mustenv("LEETCODE_USERNAME")   # noqa: F841 (kept for clarity)
-    session      = mustenv("LEETCODE_SESSION")
-    csrf         = mustenv("LEETCODE_CSRF")
-    nc_map       = load_nc_map()
+    notion_db = mustenv("NOTION_DATABASE_ID").replace("-", "")
+    mustenv("LEETCODE_USERNAME")  # clarity: not used directly in backfill queries
+    session = mustenv("LEETCODE_SESSION")
+    csrf = mustenv("LEETCODE_CSRF")
+
+    nc_map = load_nc_map()
+    tuf_map = load_tuf_map()
+
+    db_props = notion_get_db_props(notion_token, notion_db)
+
+    slug_prop = P_SLUG if (db_props.get(P_SLUG) or {}).get("type") == "rich_text" else ""
+    completed_prop = P_COMPLETED if (db_props.get(P_COMPLETED) or {}).get("type") == "date" else ""
 
     print("[backfill] Querying Notion index …")
-    pages        = notion_query_all(notion_token, notion_db)
-    notion_index = notion_index_pages(pages)
+    pages = notion_query_all(notion_token, notion_db)
+    notion_index = notion_index_pages(pages, slug_prop, completed_prop)
     print(f"[backfill] {len(notion_index)} existing pages indexed.")
 
     print("[backfill] Fetching all solved slugs from LeetCode (authenticated) …")
@@ -428,11 +556,6 @@ def cmd_backfill(args: argparse.Namespace) -> None:
     for slug in solved_slugs:
         existing = notion_index.get(slug)
 
-        # Skip if already in Notion with a completed date (nothing to do)
-        if existing and existing.get("completed") and not args.create_missing:
-            continue
-
-        # Try to get the earliest AC date
         completed: str | None = None
         if args.fill_dates:
             if not existing or not existing.get("completed"):
@@ -442,7 +565,10 @@ def cmd_backfill(args: argparse.Namespace) -> None:
                     print(f"[backfill] WARNING: could not get date for {slug}: {exc}")
                 time.sleep(0.4)
 
-        upsert(slug, completed, nc_map, notion_token, notion_db, notion_index)
+        if not args.create_missing and not existing:
+            continue
+
+        upsert(slug, completed, nc_map, tuf_map, notion_token, notion_db, notion_index, db_props)
         time.sleep(0.2)
 
     print("[backfill] Done.")
@@ -452,24 +578,15 @@ def cmd_backfill(args: argparse.Namespace) -> None:
 # Entry point
 # ──────────────────────────────────────────────
 def main() -> None:
-    ap  = argparse.ArgumentParser(description="LeetCode → Notion tracker")
+    ap = argparse.ArgumentParser(description="LeetCode → Notion tracker")
     sub = ap.add_subparsers(dest="cmd", required=True)
 
     p_sync = sub.add_parser("sync", help="Cookie-free incremental sync")
-    p_sync.add_argument(
-        "--recent-limit", type=int, default=20,
-        help="How many recent AC submissions to pull (max LeetCode returns: ~20)",
-    )
+    p_sync.add_argument("--recent-limit", type=int, default=20)
 
     p_back = sub.add_parser("backfill", help="One-time full history backfill (needs cookies)")
-    p_back.add_argument(
-        "--create-missing", action="store_true", default=True,
-        help="Create Notion pages for every solved problem (default: True)",
-    )
-    p_back.add_argument(
-        "--fill-dates", action="store_true", default=False,
-        help="Attempt to find the earliest Accepted date for each problem",
-    )
+    p_back.add_argument("--create-missing", action="store_true", default=False)
+    p_back.add_argument("--fill-dates", action="store_true", default=False)
 
     args = ap.parse_args()
 

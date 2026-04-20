@@ -1,0 +1,230 @@
+{
+  "3sum": [
+    "Two Pointers"
+  ],
+  "3sum-smaller": [
+    "Two Pointers"
+  ],
+  "4sum": [
+    "Two Pointers"
+  ],
+  "append-characters-to-string-to-make-subsequence": [
+    "Two Pointers"
+  ],
+  "assign-cookies": [
+    "Two Pointers"
+  ],
+  "boats-to-save-people": [
+    "Two Pointers"
+  ],
+  "candy-crush": [
+    "Two Pointers"
+  ],
+  "closest-binary-search-tree-value-ii": [
+    "Two Pointers"
+  ],
+  "container-with-most-water": [
+    "Two Pointers"
+  ],
+  "dot-product-of-two-sparse-vectors": [
+    "Two Pointers"
+  ],
+  "find-duplicate-integer": [
+    "Two Pointers"
+  ],
+  "find-k-closest-elements": [
+    "Two Pointers"
+  ],
+  "find-median-from-data-stream": [
+    "Two Pointers"
+  ],
+  "find-median-in-a-data-stream": [
+    "Two Pointers"
+  ],
+  "find-the-celebrity": [
+    "Two Pointers"
+  ],
+  "find-the-duplicate-number": [
+    "Two Pointers"
+  ],
+  "find-the-index-of-the-first-occurrence-in-a-string": [
+    "Two Pointers"
+  ],
+  "happy-number": [
+    "Two Pointers"
+  ],
+  "intersection-of-two-arrays": [
+    "Two Pointers"
+  ],
+  "intersection-of-two-linked-lists": [
+    "Two Pointers"
+  ],
+  "interval-list-intersections": [
+    "Two Pointers"
+  ],
+  "is-palindrome": [
+    "Two Pointers"
+  ],
+  "is-subsequence": [
+    "Two Pointers"
+  ],
+  "linked-list-cycle": [
+    "Two Pointers"
+  ],
+  "linked-list-cycle-detection": [
+    "Two Pointers"
+  ],
+  "longest-palindromic-substring": [
+    "Two Pointers"
+  ],
+  "lowest-common-ancestor-of-a-binary-tree-iii": [
+    "Two Pointers"
+  ],
+  "max-water-container": [
+    "Two Pointers"
+  ],
+  "maximum-twin-sum-of-a-linked-list": [
+    "Two Pointers"
+  ],
+  "meeting-rooms-ii": [
+    "Two Pointers"
+  ],
+  "meeting-schedule-ii": [
+    "Two Pointers"
+  ],
+  "meeting-scheduler": [
+    "Two Pointers"
+  ],
+  "merge-sorted-array": [
+    "Two Pointers"
+  ],
+  "merge-strings-alternately": [
+    "Two Pointers"
+  ],
+  "middle-of-the-linked-list": [
+    "Two Pointers"
+  ],
+  "move-zeroes": [
+    "Two Pointers"
+  ],
+  "next-permutation": [
+    "Two Pointers"
+  ],
+  "non-cyclical-number": [
+    "Two Pointers"
+  ],
+  "number-of-subsequences-that-satisfy-the-given-sum-condition": [
+    "Two Pointers"
+  ],
+  "one-edit-distance": [
+    "Two Pointers"
+  ],
+  "palindrome-linked-list": [
+    "Two Pointers"
+  ],
+  "palindromic-substrings": [
+    "Two Pointers"
+  ],
+  "partition-labels": [
+    "Two Pointers"
+  ],
+  "permutation-in-string": [
+    "Two Pointers"
+  ],
+  "permutation-string": [
+    "Two Pointers"
+  ],
+  "print-immutable-linked-list-in-reverse": [
+    "Two Pointers"
+  ],
+  "product-of-two-run-length-encoded-arrays": [
+    "Two Pointers"
+  ],
+  "rearrange-array-elements-by-sign": [
+    "Two Pointers"
+  ],
+  "remove-duplicates-from-sorted-array": [
+    "Two Pointers"
+  ],
+  "remove-element": [
+    "Two Pointers"
+  ],
+  "remove-node-from-end-of-linked-list": [
+    "Two Pointers"
+  ],
+  "remove-nth-node-from-end-of-list": [
+    "Two Pointers"
+  ],
+  "reorder-linked-list": [
+    "Two Pointers"
+  ],
+  "reorder-list": [
+    "Two Pointers"
+  ],
+  "reverse-string": [
+    "Two Pointers"
+  ],
+  "reverse-words-in-a-string-ii": [
+    "Two Pointers"
+  ],
+  "rotate-array": [
+    "Two Pointers"
+  ],
+  "rotate-list": [
+    "Two Pointers"
+  ],
+  "rotating-the-box": [
+    "Two Pointers"
+  ],
+  "shortest-way-to-form-string": [
+    "Two Pointers"
+  ],
+  "shortest-word-distance-ii": [
+    "Two Pointers"
+  ],
+  "sort-array-by-parity": [
+    "Two Pointers"
+  ],
+  "sort-colors": [
+    "Two Pointers"
+  ],
+  "sort-transformed-array": [
+    "Two Pointers"
+  ],
+  "squares-of-a-sorted-array": [
+    "Two Pointers"
+  ],
+  "string-compression": [
+    "Two Pointers"
+  ],
+  "strobogrammatic-number": [
+    "Two Pointers"
+  ],
+  "three-integer-sum": [
+    "Two Pointers"
+  ],
+  "trapping-rain-water": [
+    "Two Pointers"
+  ],
+  "two-integer-sum-ii": [
+    "Two Pointers"
+  ],
+  "two-sum-bsts": [
+    "Two Pointers"
+  ],
+  "two-sum-ii-input-array-is-sorted": [
+    "Two Pointers"
+  ],
+  "two-sum-less-than-k": [
+    "Two Pointers"
+  ],
+  "valid-palindrome": [
+    "Two Pointers"
+  ],
+  "valid-palindrome-ii": [
+    "Two Pointers"
+  ],
+  "valid-word-abbreviation": [
+    "Two Pointers"
+  ]
+}

@@ -2,7 +2,6 @@ name: Sync LeetCode → Notion (cookie-free)
 
 on:
   schedule:
-    # 12:00 AM and 12:00 PM IST (Asia/Kolkata = UTC+5:30)
     - cron: "30 18,6 * * *"
       timezone: "Asia/Kolkata"
   workflow_dispatch: {}

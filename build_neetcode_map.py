@@ -1,29 +1,36 @@
 """
 build_neetcode_map.py
 
-Scrape NeetCode "NeetCode All" practice list and generate:
-  neetcode_all_map.json -> { "two-sum": ["Arrays & Hashing"], ... }
+Builds neetcode_all_map.json:
+  { "<leetcode_slug>": ["Arrays & Hashing", ...], ... }
 
-This version is hardened for modern SPA DOMs:
-- does NOT assume <a href="..."> links exist
-- extracts "/problems/<slug>" from ANY attribute (href, data-href, onclick, etc.)
-- dumps debug artifacts (HTML + screenshot) when extraction fails
+Source:
+  https://neetcode.io/practice/practice/allNC
 
-Env:
-  NEETCODE_DEBUG=1  -> always dump debug artifacts
+Approach:
+- Load the page with Playwright
+- Capture JSON network responses + common SPA globals
+- Walk JSON to associate:
+    slug -> NeetCode category (canonical list)
+- Write neetcode_all_map.json
+
+Debug artifacts (on failure or NEETCODE_DEBUG=1):
+  neetcode_debug.html
+  neetcode_debug.png
 """
 
 import asyncio
 import json
 import os
 import re
-import sys
 from pathlib import Path
+from typing import Any
 
 from playwright.async_api import async_playwright
 
 NEETCODE_URL = "https://neetcode.io/practice/practice/allNC"
 OUTPUT_FILE = "neetcode_all_map.json"
+DEBUG = os.getenv("NEETCODE_DEBUG", "0") == "1"
 
 CANONICAL_CATEGORIES = [
     "Arrays & Hashing",
@@ -47,230 +54,189 @@ CANONICAL_CATEGORIES = [
     "JavaScript",
 ]
 
-DEBUG = os.getenv("NEETCODE_DEBUG", "0") == "1"
+
+def wpath(name: str) -> Path:
+    return Path(os.getenv("GITHUB_WORKSPACE", ".")) / name
 
 
-def _dump_path(name: str) -> Path:
-    # Dump into repo workspace (GitHub Actions) or cwd (local)
-    base = Path(os.getenv("GITHUB_WORKSPACE", "."))
-    return base / name
+def normalize_category(s: str) -> str | None:
+    if not isinstance(s, str):
+        return None
+    s2 = " ".join(s.strip().split())
+    # exact canonical
+    if s2 in CANONICAL_CATEGORIES:
+        return s2
+    # case-insensitive match
+    for c in CANONICAL_CATEGORIES:
+        if s2.lower() == c.lower():
+            return c
+    # common variations
+    aliases = {
+        "Heaps / Priority Queue": "Heap / Priority Queue",
+        "Heap/Priority Queue": "Heap / Priority Queue",
+        "1D Dynamic Programming": "1-D Dynamic Programming",
+        "2D Dynamic Programming": "2-D Dynamic Programming",
+    }
+    if s2 in aliases:
+        return aliases[s2]
+    return None
+
+
+def extract_slug(val: str) -> str | None:
+    if not val:
+        return None
+
+    # leetcode URL
+    m = re.search(r"leetcode\.com/problems/([^/\s?#]+)", val)
+    if m:
+        return m.group(1)
+
+    # neetcode internal URL
+    m = re.search(r"/problems/([^/\s?#]+)", val)
+    if m:
+        return m.group(1)
+
+    # already a slug
+    if re.fullmatch(r"[a-z0-9]+(?:-[a-z0-9]+)*", val):
+        return val
+
+    return None
+
+
+def walk(node: Any, mapping: dict[str, set[str]], cat_ctx: str | None = None, key_ctx: str = "") -> None:
+    if isinstance(node, dict):
+        local_cat = cat_ctx
+
+        # category context
+        for k, v in node.items():
+            if isinstance(v, str):
+                c = normalize_category(v)
+                if c:
+                    local_cat = c
+                if k.lower() in {"category", "section", "group", "topic", "name", "title"}:
+                    c2 = normalize_category(v)
+                    if c2:
+                        local_cat = c2
+
+        # slug from common keys
+        for k in ("titleSlug", "title_slug", "leetcodeSlug", "problemSlug", "slug", "href", "url", "link", "path", "to"):
+            v = node.get(k)
+            if isinstance(v, str):
+                slug = extract_slug(v)
+                if slug:
+                    mapping.setdefault(slug, set()).add(local_cat or "Uncategorized")
+
+        for k, v in node.items():
+            walk(v, mapping, local_cat, k)
+
+    elif isinstance(node, list):
+        for item in node:
+            walk(item, mapping, cat_ctx, key_ctx)
+
+    elif isinstance(node, str):
+        slug = extract_slug(node)
+        if slug and ("leetcode.com/problems/" in node or "/problems/" in node):
+            mapping.setdefault(slug, set()).add(cat_ctx or "Uncategorized")
 
 
 async def dump_debug(page) -> None:
-    """Write screenshot + HTML so we can inspect what the runner actually got."""
     try:
-        await page.screenshot(path=str(_dump_path("neetcode_debug.png")), full_page=True)
-    except Exception as e:
-        print(f"[debug] screenshot failed: {e}")
-
-    try:
-        html = await page.content()
-        _dump_path("neetcode_debug.html").write_text(html, encoding="utf-8")
-    except Exception as e:
-        print(f"[debug] html dump failed: {e}")
-
-    try:
-        print(f"[debug] page.url={page.url}")
-        print(f"[debug] page.title={await page.title()}")
+        await page.screenshot(path=str(wpath("neetcode_debug.png")), full_page=True)
     except Exception:
         pass
-
-
-async def best_effort_click(page, label: str) -> bool:
-    """Click a control by exact visible text, but never fail the run if missing."""
     try:
-        loc = page.get_by_text(label, exact=True).first
-        await loc.click(timeout=5_000)
-        await page.wait_for_timeout(750)
-        return True
-    except Exception:
-        return False
-
-
-async def expand_every_category(page) -> None:
-    """
-    Try to expand the list. NeetCode uses collapsible sections.
-    We do:
-      - click "Expand" once if present
-      - click each category heading (best-effort)
-    """
-    await best_effort_click(page, "Expand")
-
-    for cat in CANONICAL_CATEGORIES:
-        try:
-            await page.get_by_text(cat, exact=True).first.click(timeout=1_500)
-            await page.wait_for_timeout(200)
-        except Exception:
-            # Not fatal—DOM may differ.
-            pass
-
-
-async def scroll_page(page, rounds: int = 25) -> None:
-    # Many SPAs render more items only after scrolling.
-    for _ in range(rounds):
-        await page.mouse.wheel(0, 3000)
-        await page.wait_for_timeout(250)
-    # Also try End/Home (sometimes the scroll container listens to keys)
-    try:
-        await page.keyboard.press("End")
-        await page.wait_for_timeout(500)
-        await page.keyboard.press("Home")
-        await page.wait_for_timeout(500)
-        await page.keyboard.press("End")
-        await page.wait_for_timeout(500)
+        wpath("neetcode_debug.html").write_text(await page.content(), encoding="utf-8")
     except Exception:
         pass
 
 
 async def scrape() -> dict[str, list[str]]:
+    captured: list[dict[str, Any]] = []
+
     async with async_playwright() as pw:
         browser = await pw.chromium.launch(
             headless=True,
-            args=[
-                "--no-sandbox",
-                "--disable-dev-shm-usage",
-                "--disable-blink-features=AutomationControlled",
-            ],
+            args=["--no-sandbox", "--disable-dev-shm-usage", "--disable-blink-features=AutomationControlled"],
         )
-
         context = await browser.new_context(
             user_agent=(
                 "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 "
                 "(KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36"
             ),
-            locale="en-US",
-            timezone_id="UTC",
             viewport={"width": 1400, "height": 900},
+            locale="en-US",
         )
-
-        # Stealth-ish: hide navigator.webdriver
-        await context.add_init_script(
-            "Object.defineProperty(navigator, 'webdriver', {get: () => undefined});"
-        )
-
+        await context.add_init_script("Object.defineProperty(navigator, 'webdriver', {get: () => undefined});")
         page = await context.new_page()
 
-        if DEBUG:
-            page.on("console", lambda msg: print(f"[browser console] {msg.type}: {msg.text}"))
-            page.on("pageerror", lambda err: print(f"[browser pageerror] {err}"))
+        async def on_response(resp):
+            try:
+                ct = (resp.headers.get("content-type") or "").lower()
+                if "application/json" not in ct and "application/ld+json" not in ct and "text/json" not in ct:
+                    return
+                data = await resp.json()
+                captured.append({"url": resp.url, "json": data})
+            except Exception:
+                return
+
+        page.on("response", on_response)
 
         print(f"[build_neetcode_map] Navigating to {NEETCODE_URL} ...")
         await page.goto(NEETCODE_URL, wait_until="networkidle", timeout=120_000)
-        await page.wait_for_timeout(3_000)
+        await page.wait_for_timeout(2500)
 
-        # Expand/click categories and scroll to force rendering
-        await expand_every_category(page)
-        await scroll_page(page)
+        # Click Expand if present
+        try:
+            await page.get_by_text("Expand", exact=True).click(timeout=3000)
+            await page.wait_for_timeout(800)
+        except Exception:
+            pass
 
-        # Extract categories + problem slugs by scanning attributes of all elements
-        raw_map = await page.evaluate(
-            f"""() => {{
-  const CANON = {json.dumps(CANONICAL_CATEGORIES)};
+        # Scroll a bit to trigger any lazy loads
+        for _ in range(20):
+            await page.mouse.wheel(0, 3000)
+            await page.wait_for_timeout(200)
 
-  function norm(s) {{
-    return (s || "").replace(/\\s+/g, " ").trim();
-  }}
-
-  function slugFromAnyValue(v) {{
-    if (!v) return null;
-    const m = String(v).match(/problems\\/([^\\/\\?#]+)/);
-    return m ? m[1] : null;
-  }}
-
-  // Locate category headings by text match and record vertical position.
-  // We look at lots of elements because headings might be <div>/<button>/<h3>, etc.
-  const els = Array.from(document.querySelectorAll("body *"));
-
-  const headings = [];
-  for (const el of els) {{
-    const t = norm(el.textContent);
-    if (!t) continue;
-    const hit = CANON.find(c => t === c);
-    if (!hit) continue;
-
-    const rect = el.getBoundingClientRect();
-    headings.push({{
-      category: hit,
-      top: rect.top + window.scrollY
-    }});
-  }}
-  headings.sort((a,b) => a.top - b.top);
-
-  // Scan ALL elements for ANY attribute containing "problems/<slug>"
-  const problems = [];
-  for (const el of els) {{
-    const rect = el.getBoundingClientRect();
-    const top = rect.top + window.scrollY;
-
-    // Standard attributes
-    for (const attr of el.getAttributeNames ? el.getAttributeNames() : []) {{
-      const val = el.getAttribute(attr);
-      const slug = slugFromAnyValue(val);
-      if (slug) problems.push({{ slug, top }});
-    }}
-
-    // Sometimes frameworks store navigation in properties:
-    // try common ones very carefully
-    const any = el;
-    const candidates = [any.href, any.to, any.pathname];
-    for (const v of candidates) {{
-      const slug = slugFromAnyValue(v);
-      if (slug) problems.push({{ slug, top }});
-    }}
-  }}
-
-  // Build mapping: assign each problem to nearest heading above it
-  const result = {{}};
-  for (const p of problems) {{
-    let cat = null;
-    for (let i = headings.length - 1; i >= 0; i--) {{
-      if (headings[i].top <= p.top) {{
-        cat = headings[i].category;
-        break;
-      }}
-    }}
-    if (!cat) cat = "Uncategorized";
-    if (!result[p.slug]) result[p.slug] = [];
-    if (!result[p.slug].includes(cat)) result[p.slug].push(cat);
-  }}
-
-  return {{
-    headingsCount: headings.length,
-    problemsFound: problems.length,
-    map: result
-  }};
-}}"""
+        globals_blob = await page.evaluate(
+            """() => ({
+              __NEXT_DATA__: (typeof window.__NEXT_DATA__ !== 'undefined') ? window.__NEXT_DATA__ : null,
+              __NUXT__: (typeof window.__NUXT__ !== 'undefined') ? window.__NUXT__ : null,
+              __APOLLO_STATE__: (typeof window.__APOLLO_STATE__ !== 'undefined') ? window.__APOLLO_STATE__ : null,
+              __INITIAL_STATE__: (typeof window.__INITIAL_STATE__ !== 'undefined') ? window.__INITIAL_STATE__ : null,
+            })"""
         )
 
-        mapping: dict[str, list[str]] = raw_map["map"]
-        slugs = list(mapping.keys())
+        sources: list[Any] = []
+        sources.append({"url": "globals", "json": globals_blob})
+        sources.extend(captured)
 
-        print(
-            f"[build_neetcode_map] headings={raw_map['headingsCount']} "
-            f"problemElements={raw_map['problemsFound']} uniqueSlugs={len(slugs)}"
-        )
+        print(f"[build_neetcode_map] json_sources={len(captured)}")
 
-        if DEBUG or len(slugs) == 0:
+        mapping_sets: dict[str, set[str]] = {}
+        for src in sources:
+            walk(src.get("json"), mapping_sets)
+
+        mapping: dict[str, list[str]] = {}
+        for slug, cats in mapping_sets.items():
+            # keep only canonical-ish categories; drop Uncategorized if we have better
+            cats2 = sorted(set([c for c in cats if c and c != "Uncategorized"]))
+            mapping[slug] = cats2 if cats2 else ["Uncategorized"]
+
+        if DEBUG or len(mapping) == 0:
             await dump_debug(page)
 
         await browser.close()
-
         return mapping
 
 
 def main() -> None:
     mapping = asyncio.run(scrape())
+    if not mapping or all(v == ["Uncategorized"] for v in mapping.values()):
+        print("[build_neetcode_map] ERROR: extracted no usable categories/slugs.")
+        raise SystemExit(1)
 
-    if not mapping:
-        print("[build_neetcode_map] ERROR: extracted 0 problems. Aborting.")
-        sys.exit(1)
-
-    Path(OUTPUT_FILE).write_text(
-        json.dumps(mapping, indent=2, sort_keys=True),
-        encoding="utf-8",
-    )
-
-    print(f"[build_neetcode_map] Wrote {len(mapping)} slugs to {OUTPUT_FILE}")
+    wpath(OUTPUT_FILE).write_text(json.dumps(mapping, indent=2, sort_keys=True), encoding="utf-8")
+    print(f"[build_neetcode_map] Wrote {len(mapping)} slugs → {OUTPUT_FILE}")
 
 
 if __name__ == "__main__":
