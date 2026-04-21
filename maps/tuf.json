@@ -1,1 +1,1190 @@
-{}
+{
+  "01-matrix": [
+    "Arrays",
+    "Data Structures",
+    "Graph"
+  ],
+  "3sum": [
+    "Arrays",
+    "Data Structures",
+    "Hashing",
+    "Sorting",
+    "Two Pointer"
+  ],
+  "4sum": [
+    "Arrays",
+    "Data Structures",
+    "Hashing",
+    "Sorting",
+    "Two Pointer"
+  ],
+  "accounts-merge": [
+    "Data Structures",
+    "Graph"
+  ],
+  "add-two-numbers": [
+    "Data Structures",
+    "Linked List"
+  ],
+  "alien-dictionary": [
+    "Data Structures",
+    "String"
+  ],
+  "all-nodes-distance-k-in-binary-tree": [
+    "Binary Tree",
+    "Data Structures"
+  ],
+  "armstrong-number": [
+    "Data Structures",
+    "Maths"
+  ],
+  "assign-cookies": [
+    "Arrays",
+    "Data Structures",
+    "Dynamic Programming",
+    "Greedy",
+    "Recursion",
+    "Sorting",
+    "Two Pointer"
+  ],
+  "asteroid-collision": [
+    "Arrays",
+    "Data Structures",
+    "Stack"
+  ],
+  "balanced-binary-tree": [
+    "Binary Tree",
+    "Data Structures"
+  ],
+  "best-time-to-buy-and-sell-stock": [
+    "Arrays",
+    "Data Structures",
+    "Dynamic Programming",
+    "Recursion"
+  ],
+  "best-time-to-buy-and-sell-stock-ii": [
+    "Arrays",
+    "Data Structures",
+    "Dynamic Programming",
+    "Recursion"
+  ],
+  "best-time-to-buy-and-sell-stock-iii": [
+    "Arrays",
+    "Data Structures",
+    "Dynamic Programming",
+    "Recursion"
+  ],
+  "best-time-to-buy-and-sell-stock-iv": [
+    "Arrays",
+    "Data Structures",
+    "Dynamic Programming",
+    "Recursion"
+  ],
+  "best-time-to-buy-and-sell-stock-with-cooldown": [
+    "Arrays",
+    "Data Structures",
+    "Dynamic Programming",
+    "Recursion"
+  ],
+  "best-time-to-buy-and-sell-stock-with-transaction-fee": [
+    "Arrays",
+    "Data Structures",
+    "Dynamic Programming",
+    "Recursion"
+  ],
+  "binary-search": [
+    "Arrays",
+    "Binary Search",
+    "Data Structures"
+  ],
+  "binary-search-tree-iterator": [
+    "Binary Search Tree",
+    "Data Structures",
+    "Hashing"
+  ],
+  "binary-subarrays-with-sum": [
+    "Arrays",
+    "Data Structures",
+    "Hashing"
+  ],
+  "binary-tree-inorder-traversal": [
+    "Binary Tree",
+    "Data Structures"
+  ],
+  "binary-tree-level-order-traversal": [
+    "Binary Tree",
+    "Data Structures"
+  ],
+  "binary-tree-maximum-path-sum": [
+    "Binary Tree",
+    "Data Structures"
+  ],
+  "binary-tree-postorder-traversal": [
+    "Binary Tree",
+    "Data Structures"
+  ],
+  "binary-tree-preorder-traversal": [
+    "Binary Tree",
+    "Data Structures"
+  ],
+  "binary-tree-right-side-view": [
+    "Binary Tree",
+    "Data Structures"
+  ],
+  "binary-tree-zigzag-level-order-traversal": [
+    "Binary Tree",
+    "Data Structures"
+  ],
+  "boundary-of-binary-tree": [
+    "Binary Tree",
+    "Data Structures"
+  ],
+  "burst-balloons": [
+    "Arrays",
+    "Data Structures",
+    "Dynamic Programming",
+    "Recursion"
+  ],
+  "candy": [
+    "Arrays",
+    "Greedy"
+  ],
+  "capacity-to-ship-packages-within-d-days": [
+    "Arrays",
+    "Binary Search",
+    "Data Structures"
+  ],
+  "cheapest-flights-within-k-stops": [
+    "Data Structures",
+    "Graph"
+  ],
+  "check-if-array-is-sorted-and-rotated": [
+    "Arrays",
+    "Data Structures"
+  ],
+  "climbing-stairs": [
+    "Arrays",
+    "Data Structures",
+    "Dynamic Programming",
+    "Recursion"
+  ],
+  "coin-change": [
+    "Arrays",
+    "Data Structures",
+    "Dynamic Programming",
+    "Recursion"
+  ],
+  "coin-change-2": [
+    "Arrays",
+    "Data Structures",
+    "Dynamic Programming",
+    "Recursion"
+  ],
+  "combination-sum": [
+    "Arrays",
+    "Data Structures",
+    "Recursion"
+  ],
+  "combination-sum-ii": [
+    "Arrays",
+    "Data Structures",
+    "Recursion"
+  ],
+  "combination-sum-iii": [
+    "Arrays",
+    "Data Structures",
+    "Recursion"
+  ],
+  "construct-binary-search-tree-from-preorder-traversal": [
+    "Binary Search Tree",
+    "Data Structures"
+  ],
+  "construct-binary-tree-from-inorder-and-postorder-traversal": [
+    "Binary Tree",
+    "Data Structures"
+  ],
+  "construct-binary-tree-from-preorder-and-inorder-traversal": [
+    "Binary Tree",
+    "Data Structures"
+  ],
+  "copy-list-with-random-pointer": [
+    "Data Structures",
+    "Linked List"
+  ],
+  "count-and-say": [
+    "Data Structures",
+    "String"
+  ],
+  "count-complete-tree-nodes": [
+    "Binary Tree",
+    "Data Structures"
+  ],
+  "count-good-numbers": [
+    "Data Structures",
+    "Maths"
+  ],
+  "count-number-of-nice-subarrays": [
+    "Arrays",
+    "Hashing",
+    "Maths"
+  ],
+  "count-primes": [
+    "Data Structures",
+    "Maths"
+  ],
+  "count-square-submatrices-with-all-ones": [
+    "Arrays",
+    "Data Structures",
+    "Dynamic Programming",
+    "Recursion"
+  ],
+  "course-schedule": [
+    "Data Structures",
+    "Graph"
+  ],
+  "course-schedule-ii": [
+    "Data Structures",
+    "Graph"
+  ],
+  "critical-connections-in-a-network": [
+    "Data Structures",
+    "Graph"
+  ],
+  "delete-node-in-a-bst": [
+    "Binary Search Tree",
+    "Data Structures"
+  ],
+  "delete-node-in-a-linked-list": [
+    "Data Structures",
+    "Linked List"
+  ],
+  "delete-operation-for-two-strings": [
+    "Arrays",
+    "Data Structures",
+    "Dynamic Programming",
+    "Recursion"
+  ],
+  "delete-the-middle-node-of-a-linked-list": [
+    "Data Structures",
+    "Linked List"
+  ],
+  "design-twitter": [
+    "Hashing",
+    "Heap",
+    "Linked List"
+  ],
+  "diameter-of-binary-tree": [
+    "Binary Tree",
+    "Data Structures"
+  ],
+  "distinct-subsequences": [
+    "Arrays",
+    "Data Structures",
+    "Dynamic Programming",
+    "Recursion"
+  ],
+  "divide-two-integers": [
+    "Data Structures",
+    "Maths"
+  ],
+  "edit-distance": [
+    "Arrays",
+    "Data Structures",
+    "Dynamic Programming",
+    "Recursion"
+  ],
+  "expression-add-operators": [
+    "Data Structures",
+    "Maths",
+    "String"
+  ],
+  "fibonacci-number": [
+    "Data Structures",
+    "Maths"
+  ],
+  "find-a-peak-element-ii": [
+    "Arrays",
+    "Binary Search"
+  ],
+  "find-eventual-safe-states": [
+    "Data Structures",
+    "Graph"
+  ],
+  "find-first-and-last-position-of-element-in-sorted-array": [
+    "Arrays",
+    "Binary Search",
+    "Data Structures"
+  ],
+  "find-median-from-data-stream": [
+    "Data Structures",
+    "Heap",
+    "Sorting",
+    "Two Pointer"
+  ],
+  "find-minimum-in-rotated-sorted-array": [
+    "Arrays",
+    "Data Structures"
+  ],
+  "find-peak-element": [
+    "Arrays",
+    "Binary Search"
+  ],
+  "find-the-city-with-the-smallest-number-of-neighbors-at-a-threshold-distance": [
+    "Data Structures",
+    "Graph"
+  ],
+  "find-the-smallest-divisor-given-a-threshold": [
+    "Data Structures",
+    "Maths"
+  ],
+  "flatten-binary-tree-to-linked-list": [
+    "Binary Tree",
+    "Data Structures",
+    "Linked List"
+  ],
+  "flood-fill": [
+    "Data Structures",
+    "Graph"
+  ],
+  "frequency-of-the-most-frequent-element": [
+    "Arrays",
+    "Data Structures",
+    "Hashing"
+  ],
+  "generate-parentheses": [
+    "Data Structures",
+    "Dynamic Programming",
+    "String"
+  ],
+  "hand-of-straights": [
+    "Arrays",
+    "Data Structures",
+    "Greedy",
+    "Hashing",
+    "Sorting"
+  ],
+  "house-robber": [
+    "Arrays",
+    "Data Structures",
+    "Dynamic Programming",
+    "Recursion"
+  ],
+  "house-robber-ii": [
+    "Arrays",
+    "Data Structures",
+    "Dynamic Programming",
+    "Recursion"
+  ],
+  "implement-queue-using-stacks": [
+    "Data Structures",
+    "Queue",
+    "Stack"
+  ],
+  "implement-stack-using-queues": [
+    "Data Structures",
+    "Queue",
+    "Stack"
+  ],
+  "implement-strstr": [
+    "Data Structures",
+    "String"
+  ],
+  "implement-trie-prefix-tree": [
+    "Data Structures",
+    "Trie"
+  ],
+  "inorder-successor-in-bst": [
+    "Binary Search Tree",
+    "Data Structures"
+  ],
+  "insert-interval": [
+    "Arrays",
+    "Data Structures"
+  ],
+  "insert-into-a-binary-search-tree": [
+    "Binary Search Tree",
+    "Data Structures"
+  ],
+  "intersection-of-two-linked-lists": [
+    "Data Structures",
+    "Linked List"
+  ],
+  "is-graph-bipartite": [
+    "Arrays",
+    "Data Structures",
+    "Graph"
+  ],
+  "isomorphic-strings": [
+    "Data Structures",
+    "String"
+  ],
+  "jump-game": [
+    "Arrays",
+    "Data Structures",
+    "Dynamic Programming",
+    "Greedy"
+  ],
+  "jump-game-ii": [
+    "Arrays",
+    "Data Structures",
+    "Dynamic Programming",
+    "Greedy"
+  ],
+  "koko-eating-bananas": [
+    "Arrays",
+    "Binary Search",
+    "Data Structures"
+  ],
+  "kth-largest-element-in-a-stream": [
+    "Binary Search Tree",
+    "Data Structures",
+    "Heap"
+  ],
+  "kth-largest-element-in-an-array": [
+    "Arrays",
+    "Data Structures",
+    "Heap"
+  ],
+  "kth-missing-positive-number": [
+    "Arrays",
+    "Binary Search",
+    "Data Structures"
+  ],
+  "kth-smallest-element-in-a-bst": [
+    "Binary Search Tree",
+    "Data Structures"
+  ],
+  "largest-divisible-subset": [
+    "Arrays",
+    "Data Structures",
+    "Dynamic Programming",
+    "Recursion"
+  ],
+  "largest-odd-number-in-string": [
+    "Data Structures",
+    "String"
+  ],
+  "largest-rectangle-in-histogram": [
+    "Arrays",
+    "Data Structures"
+  ],
+  "lemonade-change": [
+    "Arrays",
+    "Data Structures",
+    "Greedy"
+  ],
+  "letter-combinations-of-a-phone-number": [
+    "Data Structures",
+    "Hashing",
+    "String"
+  ],
+  "lfu-cache": [
+    "Data Structures",
+    "Linked List"
+  ],
+  "linked-list-cycle": [
+    "Data Structures",
+    "Linked List"
+  ],
+  "linked-list-cycle-ii": [
+    "Data Structures",
+    "Hashing",
+    "Linked List",
+    "Two Pointer"
+  ],
+  "longest-common-prefix": [
+    "Data Structures",
+    "String"
+  ],
+  "longest-common-subsequence": [
+    "Arrays",
+    "Data Structures",
+    "Dynamic Programming",
+    "Recursion"
+  ],
+  "longest-consecutive-sequence": [
+    "Arrays",
+    "Data Structures",
+    "Hashing"
+  ],
+  "longest-happy-prefix": [
+    "Hashing",
+    "String"
+  ],
+  "longest-increasing-subsequence": [
+    "Arrays",
+    "Data Structures",
+    "Dynamic Programming",
+    "Recursion"
+  ],
+  "longest-palindromic-subsequence": [
+    "Arrays",
+    "Data Structures",
+    "Dynamic Programming",
+    "Recursion"
+  ],
+  "longest-palindromic-substring": [
+    "Data Structures",
+    "String"
+  ],
+  "longest-repeating-character-replacement": [
+    "Hashing",
+    "String"
+  ],
+  "longest-string-chain": [
+    "Data Structures",
+    "Dynamic Programming",
+    "Recursion",
+    "String"
+  ],
+  "longest-substring-with-at-most-k-distinct-characters": [
+    "Data Structures",
+    "String"
+  ],
+  "longest-substring-without-repeating-characters": [
+    "Data Structures",
+    "String"
+  ],
+  "lowest-common-ancestor-of-a-binary-search-tree": [
+    "Binary Search Tree",
+    "Data Structures"
+  ],
+  "lowest-common-ancestor-of-a-binary-tree": [
+    "Binary Search Tree",
+    "Data Structures"
+  ],
+  "lru-cache": [
+    "Data Structures",
+    "Linked List"
+  ],
+  "majority-element": [
+    "Arrays",
+    "Data Structures",
+    "Hashing"
+  ],
+  "majority-element-ii": [
+    "Arrays",
+    "Data Structures",
+    "Hashing"
+  ],
+  "making-a-large-island": [
+    "Data Structures",
+    "Graph"
+  ],
+  "max-consecutive-ones": [
+    "Arrays",
+    "Data Structures"
+  ],
+  "max-consecutive-ones-iii": [
+    "Arrays",
+    "Binary Search",
+    "Data Structures"
+  ],
+  "maximal-rectangle": [
+    "Arrays",
+    "Data Structures",
+    "Dynamic Programming",
+    "Recursion",
+    "Stack"
+  ],
+  "maximum-depth-of-binary-tree": [
+    "Binary Tree",
+    "Data Structures"
+  ],
+  "maximum-nesting-depth-of-the-parentheses": [
+    "Stack",
+    "String"
+  ],
+  "maximum-points-you-can-obtain-from-cards": [
+    "Arrays",
+    "Data Structures"
+  ],
+  "maximum-product-subarray": [
+    "Arrays",
+    "Data Structures"
+  ],
+  "maximum-subarray": [
+    "Arrays",
+    "Data Structures"
+  ],
+  "maximum-width-of-binary-tree": [
+    "Binary Tree",
+    "Data Structures"
+  ],
+  "maximum-xor-of-two-numbers-in-an-array": [
+    "Arrays",
+    "Bit Manipulation",
+    "Data Structures",
+    "Hashing",
+    "Trie"
+  ],
+  "maximum-xor-with-an-element-from-array": [
+    "Arrays",
+    "Bit Manipulation",
+    "Data Structures",
+    "Trie"
+  ],
+  "median-of-two-sorted-arrays": [
+    "Arrays",
+    "Binary Search",
+    "Data Structures"
+  ],
+  "merge-intervals": [
+    "Arrays",
+    "Data Structures",
+    "Sorting"
+  ],
+  "merge-k-sorted-lists": [
+    "Arrays",
+    "Data Structures",
+    "Heap",
+    "Linked List"
+  ],
+  "merge-sorted-array": [
+    "Arrays",
+    "Data Structures",
+    "Sorting"
+  ],
+  "middle-of-the-linked-list": [
+    "Data Structures",
+    "Linked List"
+  ],
+  "min-stack": [
+    "Data Structures",
+    "Stack"
+  ],
+  "minimize-max-distance-to-gas-station": [
+    "Arrays",
+    "Binary Search",
+    "Data Structures"
+  ],
+  "minimum-add-to-make-parentheses-valid": [
+    "Greedy",
+    "Stack",
+    "String",
+    "Two Pointer"
+  ],
+  "minimum-bit-flips-to-convert-number": [
+    "Bit Manipulation"
+  ],
+  "minimum-cost-to-cut-a-stick": [
+    "Arrays",
+    "Data Structures",
+    "Dynamic Programming",
+    "Recursion"
+  ],
+  "minimum-falling-path-sum": [
+    "Arrays",
+    "Data Structures",
+    "Dynamic Programming",
+    "Recursion"
+  ],
+  "minimum-insertion-steps-to-make-a-string-palindrome": [
+    "Arrays",
+    "Data Structures",
+    "Dynamic Programming",
+    "Recursion"
+  ],
+  "minimum-number-of-days-to-make-m-bouquets": [
+    "Arrays",
+    "Binary Search",
+    "Data Structures"
+  ],
+  "minimum-path-sum": [
+    "Arrays",
+    "Data Structures",
+    "Dynamic Programming",
+    "Recursion"
+  ],
+  "minimum-window-subsequence": [
+    "Data Structures",
+    "String"
+  ],
+  "minimum-window-substring": [
+    "Data Structures",
+    "String"
+  ],
+  "missing-number": [
+    "Arrays",
+    "Binary Search",
+    "Data Structures",
+    "Hashing"
+  ],
+  "most-stones-removed-with-same-row-or-column": [
+    "Arrays",
+    "Data Structures",
+    "Graph"
+  ],
+  "move-zeroes": [
+    "Arrays",
+    "Data Structures",
+    "Two Pointer"
+  ],
+  "n-queens": [
+    "Arrays",
+    "Recursion"
+  ],
+  "network-delay-time": [
+    "Data Structures",
+    "Graph"
+  ],
+  "next-greater-element-i": [
+    "Arrays",
+    "Data Structures",
+    "Stack"
+  ],
+  "next-greater-element-ii": [
+    "Arrays",
+    "Data Structures",
+    "Stack"
+  ],
+  "next-permutation": [
+    "Arrays",
+    "Data Structures",
+    "Two Pointer"
+  ],
+  "non-overlapping-intervals": [
+    "Arrays",
+    "Data Structures",
+    "Greedy",
+    "Sorting"
+  ],
+  "number-of-connected-components-in-an-undirected-graph": [
+    "Data Structures",
+    "Graph"
+  ],
+  "number-of-distinct-islands-ii": [
+    "Data Structures",
+    "Graph"
+  ],
+  "number-of-enclaves": [
+    "Data Structures",
+    "Graph"
+  ],
+  "number-of-islands-ii": [
+    "Data Structures",
+    "Graph"
+  ],
+  "number-of-longest-increasing-subsequence": [
+    "Arrays",
+    "Data Structures",
+    "Dynamic Programming",
+    "Graph"
+  ],
+  "number-of-operations-to-make-network-connected": [
+    "Data Structures",
+    "Graph"
+  ],
+  "number-of-provinces": [
+    "Data Structures",
+    "Graph"
+  ],
+  "number-of-substrings-containing-all-three-characters": [
+    "Data Structures",
+    "Hashing",
+    "String"
+  ],
+  "number-of-ways-to-arrive-at-destination": [
+    "Data Structures",
+    "Graph"
+  ],
+  "odd-even-linked-list": [
+    "Data Structures",
+    "Linked List"
+  ],
+  "online-stock-span": [
+    "Data Structures",
+    "Stack"
+  ],
+  "palindrome-linked-list": [
+    "Data Structures",
+    "Linked List"
+  ],
+  "palindrome-number": [
+    "Data Structures",
+    "Maths"
+  ],
+  "palindrome-partitioning": [
+    "Data Structures",
+    "Dynamic Programming",
+    "String"
+  ],
+  "palindrome-partitioning-ii": [
+    "Data Structures",
+    "Dynamic Programming",
+    "String"
+  ],
+  "parsing-a-boolean-expression": [
+    "Data Structures",
+    "Dynamic Programming",
+    "Recursion",
+    "String"
+  ],
+  "partition-array-for-maximum-sum": [
+    "Arrays",
+    "Data Structures",
+    "Dynamic Programming",
+    "Recursion"
+  ],
+  "partition-array-into-two-arrays-to-minimize-sum-difference": [
+    "Arrays",
+    "Data Structures",
+    "Dynamic Programming",
+    "Recursion"
+  ],
+  "partition-equal-subset-sum": [
+    "Arrays",
+    "Data Structures",
+    "Dynamic Programming",
+    "Recursion"
+  ],
+  "pascals-triangle": [
+    "Arrays",
+    "Data Structures",
+    "Maths"
+  ],
+  "path-with-minimum-effort": [
+    "Arrays",
+    "Binary Search",
+    "Data Structures",
+    "Graph",
+    "Heap"
+  ],
+  "power-of-two": [
+    "Maths"
+  ],
+  "powx-n": [
+    "Data Structures",
+    "Maths",
+    "Recursion"
+  ],
+  "rearrange-array-elements-by-sign": [
+    "Arrays",
+    "Data Structures"
+  ],
+  "recover-binary-search-tree": [
+    "Binary Search Tree",
+    "Data Structures"
+  ],
+  "remove-duplicates-from-sorted-array": [
+    "Arrays",
+    "Data Structures"
+  ],
+  "remove-k-digits": [
+    "Greedy",
+    "Stack",
+    "String"
+  ],
+  "remove-nth-node-from-end-of-list": [
+    "Data Structures",
+    "Linked List",
+    "Two Pointer"
+  ],
+  "remove-outermost-parentheses": [
+    "Stack",
+    "String"
+  ],
+  "repeated-string-match": [
+    "Data Structures",
+    "String"
+  ],
+  "reverse-integer": [
+    "Data Structures",
+    "Maths"
+  ],
+  "reverse-linked-list": [
+    "Data Structures",
+    "Linked List"
+  ],
+  "reverse-nodes-in-k-group": [
+    "Data Structures",
+    "Linked List"
+  ],
+  "reverse-pairs": [
+    "Arrays",
+    "Data Structures",
+    "Sorting"
+  ],
+  "reverse-words-in-a-string": [
+    "Data Structures",
+    "String",
+    "Two Pointer"
+  ],
+  "roman-to-integer": [
+    "Hashing",
+    "Maths",
+    "String"
+  ],
+  "rotate-array": [
+    "Arrays",
+    "Data Structures"
+  ],
+  "rotate-image": [
+    "Arrays",
+    "Data Structures"
+  ],
+  "rotate-list": [
+    "Data Structures",
+    "Linked List"
+  ],
+  "rotate-string": [
+    "Data Structures",
+    "String"
+  ],
+  "rotting-oranges": [
+    "Data Structures",
+    "Graph",
+    "Stack"
+  ],
+  "same-tree": [
+    "Binary Tree",
+    "Data Structures"
+  ],
+  "search-a-2d-matrix": [
+    "Arrays",
+    "Binary Search",
+    "Data Structures"
+  ],
+  "search-a-2d-matrix-ii": [
+    "Arrays",
+    "Binary Search",
+    "Data Structures"
+  ],
+  "search-in-a-binary-search-tree": [
+    "Binary Search Tree",
+    "Data Structures"
+  ],
+  "search-in-rotated-sorted-array": [
+    "Arrays",
+    "Binary Search"
+  ],
+  "search-in-rotated-sorted-array-ii": [
+    "Arrays",
+    "Binary Search"
+  ],
+  "search-insert-position": [
+    "Arrays",
+    "Binary Search",
+    "Data Structures"
+  ],
+  "serialize-and-deserialize-binary-tree": [
+    "Binary Tree",
+    "Data Structures"
+  ],
+  "set-matrix-zeroes": [
+    "Arrays",
+    "Data Structures"
+  ],
+  "shortest-common-supersequence": [
+    "Data Structures",
+    "Dynamic Programming",
+    "Recursion"
+  ],
+  "shortest-palindrome": [
+    "Data Structures",
+    "Hashing",
+    "String"
+  ],
+  "shortest-path-in-binary-matrix": [
+    "Arrays",
+    "Data Structures",
+    "Graph"
+  ],
+  "single-element-in-a-sorted-array": [
+    "Arrays",
+    "Binary Search",
+    "Data Structures"
+  ],
+  "single-number": [
+    "Arrays",
+    "Data Structures",
+    "Hashing"
+  ],
+  "sliding-window-maximum": [
+    "Data Structures",
+    "Heap",
+    "Queue"
+  ],
+  "sort-characters-by-frequency": [
+    "Arrays",
+    "Data Structures",
+    "Hashing"
+  ],
+  "sort-colors": [
+    "Arrays",
+    "Data Structures",
+    "Two Pointer"
+  ],
+  "sort-list": [
+    "Data Structures",
+    "Linked List"
+  ],
+  "spiral-matrix": [
+    "Arrays",
+    "Data Structures"
+  ],
+  "split-array-largest-sum": [
+    "Arrays",
+    "Binary Search",
+    "Data Structures",
+    "Dynamic Programming"
+  ],
+  "string-to-integer-atoi": [
+    "Data Structures",
+    "Recursion",
+    "String"
+  ],
+  "subarray-sum-equals-k": [
+    "Arrays",
+    "Data Structures",
+    "Hashing"
+  ],
+  "subarrays-with-k-different-integers": [
+    "Arrays",
+    "Data Structures",
+    "Hashing"
+  ],
+  "subsets": [
+    "Data Structures",
+    "Recursion"
+  ],
+  "subsets-ii": [
+    "Arrays",
+    "Data Structures",
+    "Recursion"
+  ],
+  "sudoku-solver": [
+    "Arrays",
+    "Data Structures",
+    "Hashing"
+  ],
+  "sum-of-beauty-of-all-substrings": [
+    "Data Structures",
+    "Hashing",
+    "String"
+  ],
+  "sum-of-subarray-minimums": [
+    "Arrays",
+    "Data Structures",
+    "Dynamic Programming"
+  ],
+  "sum-of-subarray-ranges": [
+    "Arrays",
+    "Data Structures",
+    "Stack"
+  ],
+  "surrounded-regions": [
+    "Data Structures",
+    "Graph"
+  ],
+  "swim-in-rising-water": [
+    "Arrays",
+    "Binary Search",
+    "Graph",
+    "Heap"
+  ],
+  "symmetric-tree": [
+    "Binary Tree",
+    "Data Structures"
+  ],
+  "target-sum": [
+    "Arrays",
+    "Data Structures",
+    "Dynamic Programming",
+    "Recursion"
+  ],
+  "task-scheduler": [
+    "Arrays",
+    "Greedy",
+    "Hashing",
+    "Heap",
+    "Sorting"
+  ],
+  "top-k-frequent-elements": [
+    "Arrays",
+    "Data Structures",
+    "Hashing",
+    "Heap",
+    "Sorting"
+  ],
+  "trapping-rain-water": [
+    "Arrays",
+    "Data Structures",
+    "Stack"
+  ],
+  "triangle": [
+    "Arrays",
+    "Data Structures",
+    "Dynamic Programming",
+    "Recursion"
+  ],
+  "two-sum": [
+    "Arrays",
+    "Data Structures",
+    "Sorting",
+    "Two Pointer"
+  ],
+  "two-sum-iv-input-is-a-bst": [
+    "Binary Search Tree",
+    "Data Structures",
+    "Two Pointer"
+  ],
+  "unique-paths": [
+    "Arrays",
+    "Data Structures",
+    "Dynamic Programming",
+    "Recursion"
+  ],
+  "unique-paths-ii": [
+    "Arrays",
+    "Data Structures",
+    "Dynamic Programming",
+    "Recursion"
+  ],
+  "valid-anagram": [
+    "Data Structures",
+    "String"
+  ],
+  "valid-palindrome": [
+    "Data Structures",
+    "String"
+  ],
+  "valid-parentheses": [
+    "Data Structures",
+    "Stack"
+  ],
+  "valid-parenthesis-string": [
+    "Data Structures",
+    "Stack",
+    "String"
+  ],
+  "validate-binary-search-tree": [
+    "Binary Tree",
+    "Data Structures"
+  ],
+  "vertical-order-traversal-of-a-binary-tree": [
+    "Binary Tree",
+    "Data Structures"
+  ],
+  "wildcard-matching": [
+    "Arrays",
+    "Data Structures",
+    "Dynamic Programming",
+    "Recursion"
+  ],
+  "word-ladder": [
+    "Data Structures",
+    "Hashing",
+    "String"
+  ],
+  "word-ladder-ii": [
+    "Data Structures",
+    "Hashing",
+    "String"
+  ],
+  "word-search": [
+    "Arrays",
+    "Data Structures",
+    "String"
+  ]
+}
