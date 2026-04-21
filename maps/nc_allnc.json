@@ -1,1 +1,2114 @@
-{}
+{
+  "132-pattern": [
+    "Stack"
+  ],
+  "2-keys-keyboard": [
+    "2-D Dynamic Programming"
+  ],
+  "3sum": [
+    "Two Pointers"
+  ],
+  "4sum": [
+    "Two Pointers"
+  ],
+  "accounts-merge": [
+    "Graphs"
+  ],
+  "add-two-numbers": [
+    "Linked List"
+  ],
+  "adding-spaces-to-a-string": [
+    "Two Pointers"
+  ],
+  "alien-dictionary": [
+    "Advanced Graphs"
+  ],
+  "all-possible-full-binary-trees": [
+    "Trees"
+  ],
+  "alternating-groups-ii": [
+    "Sliding Window"
+  ],
+  "append-characters-to-string-to-make-subsequence": [
+    "Arrays & Hashing"
+  ],
+  "apply-operations-to-an-array": [
+    "Two Pointers"
+  ],
+  "apply-operations-to-maximize-score": [
+    "Greedy"
+  ],
+  "arithmetic-slices-ii-subsequence": [
+    "2-D Dynamic Programming"
+  ],
+  "arranging-coins": [
+    "Binary Search"
+  ],
+  "array-with-elements-not-equal-to-average-of-neighbors": [
+    "Two Pointers"
+  ],
+  "as-far-from-land-as-possible": [
+    "Graphs"
+  ],
+  "assign-cookies": [
+    "Two Pointers"
+  ],
+  "asteroid-collision": [
+    "Stack"
+  ],
+  "average-waiting-time": [
+    "Arrays & Hashing"
+  ],
+  "backspace-string-compare": [
+    "Two Pointers"
+  ],
+  "bag-of-tokens": [
+    "Two Pointers"
+  ],
+  "balanced-binary-tree": [
+    "Trees"
+  ],
+  "baseball-game": [
+    "Stack"
+  ],
+  "best-sightseeing-pair": [
+    "Greedy"
+  ],
+  "best-team-with-no-conflicts": [
+    "1-D Dynamic Programming"
+  ],
+  "best-time-to-buy-and-sell-stock": [
+    "Sliding Window"
+  ],
+  "best-time-to-buy-and-sell-stock-ii": [
+    "Arrays & Hashing"
+  ],
+  "best-time-to-buy-and-sell-stock-with-cooldown": [
+    "2-D Dynamic Programming"
+  ],
+  "binary-search": [
+    "Binary Search"
+  ],
+  "binary-search-tree-iterator": [
+    "Trees"
+  ],
+  "binary-subarrays-with-sum": [
+    "Sliding Window"
+  ],
+  "binary-tree-inorder-traversal": [
+    "Trees"
+  ],
+  "binary-tree-level-order-traversal": [
+    "Trees"
+  ],
+  "binary-tree-maximum-path-sum": [
+    "Trees"
+  ],
+  "binary-tree-postorder-traversal": [
+    "Trees"
+  ],
+  "binary-tree-preorder-traversal": [
+    "Trees"
+  ],
+  "binary-tree-right-side-view": [
+    "Trees"
+  ],
+  "binary-tree-vertical-order-traversal": [
+    "Trees"
+  ],
+  "binary-tree-zigzag-level-order-traversal": [
+    "Trees"
+  ],
+  "boats-to-save-people": [
+    "Two Pointers"
+  ],
+  "brick-wall": [
+    "Arrays & Hashing"
+  ],
+  "build-a-matrix-with-conditions": [
+    "Advanced Graphs"
+  ],
+  "buildings-with-an-ocean-view": [
+    "Greedy"
+  ],
+  "burst-balloons": [
+    "2-D Dynamic Programming"
+  ],
+  "buy-two-chocolates": [
+    "Greedy"
+  ],
+  "calculate-money-in-leetcode-bank": [
+    "Math & Geometry"
+  ],
+  "can-place-flowers": [
+    "Arrays & Hashing"
+  ],
+  "candy": [
+    "Greedy"
+  ],
+  "capacity-to-ship-packages-within-d-days": [
+    "Binary Search"
+  ],
+  "car-fleet": [
+    "Stack"
+  ],
+  "car-pooling": [
+    "Heap / Priority Queue"
+  ],
+  "champagne-tower": [
+    "Arrays & Hashing"
+  ],
+  "cheapest-flights-within-k-stops": [
+    "Advanced Graphs"
+  ],
+  "check-completeness-of-a-binary-tree": [
+    "Trees"
+  ],
+  "check-if-a-parentheses-string-can-be-valid": [
+    "Greedy"
+  ],
+  "check-if-a-string-contains-all-binary-codes-of-size-k": [
+    "Arrays & Hashing"
+  ],
+  "check-if-array-is-sorted-and-rotated": [
+    "Arrays & Hashing"
+  ],
+  "check-if-grid-can-be-cut-into-sections": [
+    "Intervals"
+  ],
+  "check-if-move-is-legal": [
+    "Graphs"
+  ],
+  "check-if-number-is-a-sum-of-powers-of-three": [
+    "Math & Geometry"
+  ],
+  "check-if-one-string-swap-can-make-strings-equal": [
+    "Greedy"
+  ],
+  "check-if-there-is-a-valid-partition-for-the-array": [
+    "1-D Dynamic Programming"
+  ],
+  "check-if-two-string-arrays-are-equivalent": [
+    "Two Pointers"
+  ],
+  "cherry-pickup-ii": [
+    "2-D Dynamic Programming"
+  ],
+  "circular-sentence": [
+    "Arrays & Hashing"
+  ],
+  "clear-digits": [
+    "Stack"
+  ],
+  "climbing-stairs": [
+    "1-D Dynamic Programming"
+  ],
+  "clone-graph": [
+    "Graphs"
+  ],
+  "coin-change": [
+    "1-D Dynamic Programming"
+  ],
+  "coin-change-ii": [
+    "2-D Dynamic Programming"
+  ],
+  "combination-sum": [
+    "Backtracking"
+  ],
+  "combination-sum-ii": [
+    "Backtracking"
+  ],
+  "combination-sum-iv": [
+    "1-D Dynamic Programming"
+  ],
+  "combinations": [
+    "Backtracking"
+  ],
+  "concatenated-words": [
+    "1-D Dynamic Programming"
+  ],
+  "concatenation-of-array": [
+    "Arrays & Hashing"
+  ],
+  "constrained-subsequence-sum": [
+    "Heap / Priority Queue"
+  ],
+  "construct-binary-tree-from-inorder-and-postorder-traversal": [
+    "Trees"
+  ],
+  "construct-binary-tree-from-preorder-and-inorder-traversal": [
+    "Trees"
+  ],
+  "construct-binary-tree-from-preorder-and-postorder-traversal": [
+    "Trees"
+  ],
+  "construct-k-palindrome-strings": [
+    "Greedy"
+  ],
+  "construct-quad-tree": [
+    "Trees"
+  ],
+  "construct-smallest-number-from-di-string": [
+    "Backtracking"
+  ],
+  "construct-string-from-binary-tree": [
+    "Trees"
+  ],
+  "construct-string-with-repeat-limit": [
+    "Greedy"
+  ],
+  "construct-the-lexicographically-largest-valid-sequence": [
+    "Backtracking"
+  ],
+  "container-with-most-water": [
+    "Two Pointers"
+  ],
+  "contains-duplicate": [
+    "Arrays & Hashing"
+  ],
+  "contains-duplicate-ii": [
+    "Sliding Window"
+  ],
+  "continuous-subarray-sum": [
+    "Arrays & Hashing"
+  ],
+  "convert-1d-array-into-2d-array": [
+    "Math & Geometry"
+  ],
+  "convert-bst-to-greater-tree": [
+    "Trees"
+  ],
+  "convert-sorted-array-to-binary-search-tree": [
+    "Trees"
+  ],
+  "copy-list-with-random-pointer": [
+    "Linked List"
+  ],
+  "count-all-valid-pickup-and-delivery-options": [
+    "1-D Dynamic Programming"
+  ],
+  "count-days-without-meetings": [
+    "Intervals"
+  ],
+  "count-good-nodes-in-binary-tree": [
+    "Trees"
+  ],
+  "count-number-of-maximum-bitwise-or-subsets": [
+    "Backtracking"
+  ],
+  "count-number-of-nice-subarrays": [
+    "Sliding Window"
+  ],
+  "count-number-of-teams": [
+    "2-D Dynamic Programming"
+  ],
+  "count-odd-numbers-in-an-interval-range": [
+    "Math & Geometry"
+  ],
+  "count-of-matches-in-tournament": [
+    "Math & Geometry"
+  ],
+  "count-of-substrings-containing-every-vowel-and-k-consonants-ii": [
+    "Sliding Window"
+  ],
+  "count-prefix-and-suffix-pairs-i": [
+    "Tries"
+  ],
+  "count-prefix-and-suffix-pairs-ii": [
+    "Tries"
+  ],
+  "count-servers-that-communicate": [
+    "Graphs"
+  ],
+  "count-square-submatrices-with-all-ones": [
+    "2-D Dynamic Programming"
+  ],
+  "count-sub-islands": [
+    "Graphs"
+  ],
+  "count-subarrays-where-max-element-appears-at-least-k-times": [
+    "Sliding Window"
+  ],
+  "count-the-number-of-complete-components": [
+    "Graphs"
+  ],
+  "count-the-number-of-consistent-strings": [
+    "Arrays & Hashing"
+  ],
+  "count-the-number-of-fair-pairs": [
+    "Binary Search"
+  ],
+  "count-vowel-strings-in-ranges": [
+    "Arrays & Hashing"
+  ],
+  "count-vowels-permutation": [
+    "2-D Dynamic Programming"
+  ],
+  "count-ways-to-build-good-strings": [
+    "1-D Dynamic Programming"
+  ],
+  "counting-words-with-a-given-prefix": [
+    "Tries"
+  ],
+  "course-schedule": [
+    "Graphs"
+  ],
+  "course-schedule-ii": [
+    "Graphs"
+  ],
+  "course-schedule-iv": [
+    "Graphs"
+  ],
+  "cousins-in-binary-tree-ii": [
+    "Trees"
+  ],
+  "crawler-log-folder": [
+    "Stack"
+  ],
+  "create-binary-tree-from-descriptions": [
+    "Trees"
+  ],
+  "daily-temperatures": [
+    "Stack"
+  ],
+  "data-stream-as-disjoint-intervals": [
+    "Intervals"
+  ],
+  "decode-string": [
+    "Stack"
+  ],
+  "decode-ways": [
+    "1-D Dynamic Programming"
+  ],
+  "defuse-the-bomb": [
+    "Sliding Window"
+  ],
+  "delete-and-earn": [
+    "1-D Dynamic Programming"
+  ],
+  "delete-leaves-with-a-given-value": [
+    "Trees"
+  ],
+  "delete-node-in-a-bst": [
+    "Trees"
+  ],
+  "delete-nodes-and-return-forest": [
+    "Trees"
+  ],
+  "delete-nodes-from-linked-list-present-in-array": [
+    "Linked List"
+  ],
+  "design-a-food-rating-system": [
+    "Arrays & Hashing"
+  ],
+  "design-add-and-search-words-data-structure": [
+    "Tries"
+  ],
+  "design-browser-history": [
+    "Linked List"
+  ],
+  "design-circular-queue": [
+    "Linked List"
+  ],
+  "design-hashmap": [
+    "Arrays & Hashing"
+  ],
+  "design-hashset": [
+    "Arrays & Hashing"
+  ],
+  "design-linked-list": [
+    "Linked List"
+  ],
+  "design-parking-system": [
+    "Arrays & Hashing"
+  ],
+  "design-twitter": [
+    "Heap / Priority Queue"
+  ],
+  "design-underground-system": [
+    "Arrays & Hashing"
+  ],
+  "destination-city": [
+    "Arrays & Hashing"
+  ],
+  "detect-squares": [
+    "Math & Geometry"
+  ],
+  "detonate-the-maximum-bombs": [
+    "Graphs"
+  ],
+  "diameter-of-binary-tree": [
+    "Trees"
+  ],
+  "different-ways-to-add-parentheses": [
+    "Backtracking"
+  ],
+  "distinct-subsequences": [
+    "2-D Dynamic Programming"
+  ],
+  "distribute-coins-in-binary-tree": [
+    "Trees"
+  ],
+  "divide-array-into-equal-pairs": [
+    "Arrays & Hashing"
+  ],
+  "divide-intervals-into-minimum-number-of-groups": [
+    "Intervals"
+  ],
+  "divide-nodes-into-the-maximum-number-of-groups": [
+    "Advanced Graphs"
+  ],
+  "divide-players-into-teams-of-equal-skill": [
+    "Two Pointers"
+  ],
+  "dota2-senate": [
+    "Greedy"
+  ],
+  "edit-distance": [
+    "2-D Dynamic Programming"
+  ],
+  "eliminate-maximum-number-of-monsters": [
+    "Greedy"
+  ],
+  "encode-and-decode-strings": [
+    "Arrays & Hashing"
+  ],
+  "encode-and-decode-tinyurl": [
+    "Arrays & Hashing"
+  ],
+  "evaluate-boolean-binary-tree": [
+    "Trees"
+  ],
+  "evaluate-division": [
+    "Graphs"
+  ],
+  "evaluate-reverse-polish-notation": [
+    "Stack"
+  ],
+  "even-odd-tree": [
+    "Trees"
+  ],
+  "excel-sheet-column-title": [
+    "Math & Geometry"
+  ],
+  "extra-characters-in-a-string": [
+    "Tries"
+  ],
+  "filling-bookcase-shelves": [
+    "1-D Dynamic Programming"
+  ],
+  "final-array-state-after-k-multiplication-operations-i": [
+    "Heap / Priority Queue"
+  ],
+  "final-prices-with-a-special-discount-in-a-shop": [
+    "Stack"
+  ],
+  "find-all-anagrams-in-a-string": [
+    "Arrays & Hashing"
+  ],
+  "find-all-numbers-disappeared-in-an-array": [
+    "Arrays & Hashing"
+  ],
+  "find-all-people-with-secret": [
+    "Graphs"
+  ],
+  "find-all-possible-recipes-from-given-supplies": [
+    "Graphs"
+  ],
+  "find-bottom-left-tree-value": [
+    "Trees"
+  ],
+  "find-building-where-alice-and-bob-can-meet": [
+    "Heap / Priority Queue"
+  ],
+  "find-champion-ii": [
+    "Graphs"
+  ],
+  "find-closest-node-to-given-two-nodes": [
+    "Graphs"
+  ],
+  "find-common-characters": [
+    "Arrays & Hashing"
+  ],
+  "find-critical-and-pseudo-critical-edges-in-minimum-spanning-tree": [
+    "Advanced Graphs"
+  ],
+  "find-duplicate-subtrees": [
+    "Trees"
+  ],
+  "find-eventual-safe-states": [
+    "Graphs"
+  ],
+  "find-first-and-last-position-of-element-in-sorted-array": [
+    "Binary Search"
+  ],
+  "find-first-palindromic-string-in-the-array": [
+    "Two Pointers"
+  ],
+  "find-in-mountain-array": [
+    "Binary Search"
+  ],
+  "find-k-closest-elements": [
+    "Sliding Window"
+  ],
+  "find-k-th-smallest-pair-distance": [
+    "Binary Search"
+  ],
+  "find-largest-value-in-each-tree-row": [
+    "Trees"
+  ],
+  "find-median-from-data-stream": [
+    "Heap / Priority Queue"
+  ],
+  "find-minimum-diameter-after-merging-two-trees": [
+    "Advanced Graphs"
+  ],
+  "find-minimum-in-rotated-sorted-array": [
+    "Binary Search"
+  ],
+  "find-missing-and-repeated-values": [
+    "Arrays & Hashing"
+  ],
+  "find-peak-element": [
+    "Binary Search"
+  ],
+  "find-pivot-index": [
+    "Arrays & Hashing"
+  ],
+  "find-the-city-with-the-smallest-number-of-neighbors-at-a-threshold-distance": [
+    "Advanced Graphs"
+  ],
+  "find-the-difference-of-two-arrays": [
+    "Arrays & Hashing"
+  ],
+  "find-the-duplicate-number": [
+    "Linked List"
+  ],
+  "find-the-index-of-the-first-occurrence-in-a-string": [
+    "Arrays & Hashing"
+  ],
+  "find-the-kth-largest-integer-in-the-array": [
+    "Heap / Priority Queue"
+  ],
+  "find-the-longest-valid-obstacle-course-at-each-position": [
+    "1-D Dynamic Programming"
+  ],
+  "find-the-maximum-sum-of-node-values": [
+    "Greedy"
+  ],
+  "find-the-minimum-and-maximum-number-of-nodes-between-critical-points": [
+    "Linked List"
+  ],
+  "find-the-power-of-k-size-subarrays-i": [
+    "Sliding Window"
+  ],
+  "find-the-punishment-number-of-an-integer": [
+    "Math & Geometry"
+  ],
+  "find-the-safest-path-in-a-grid": [
+    "Advanced Graphs"
+  ],
+  "find-the-town-judge": [
+    "Graphs"
+  ],
+  "find-unique-binary-string": [
+    "Backtracking"
+  ],
+  "find-valid-matrix-given-row-and-column-sums": [
+    "Greedy"
+  ],
+  "find-words-that-can-be-formed-by-characters": [
+    "Arrays & Hashing"
+  ],
+  "first-unique-character-in-a-string": [
+    "Arrays & Hashing"
+  ],
+  "flatten-nested-list-iterator": [
+    "Stack"
+  ],
+  "flip-columns-for-maximum-number-of-equal-rows": [
+    "Greedy"
+  ],
+  "flip-equivalent-binary-trees": [
+    "Trees"
+  ],
+  "flip-string-to-monotone-increasing": [
+    "2-D Dynamic Programming"
+  ],
+  "freedom-trail": [
+    "2-D Dynamic Programming"
+  ],
+  "frequency-of-the-most-frequent-element": [
+    "Sliding Window"
+  ],
+  "fruit-into-baskets": [
+    "Sliding Window"
+  ],
+  "furthest-building-you-can-reach": [
+    "Heap / Priority Queue"
+  ],
+  "gas-station": [
+    "Greedy"
+  ],
+  "generate-parentheses": [
+    "Backtracking"
+  ],
+  "get-equal-substrings-within-budget": [
+    "Sliding Window"
+  ],
+  "graph-valid-tree": [
+    "Graphs"
+  ],
+  "greatest-common-divisor-of-strings": [
+    "Math & Geometry"
+  ],
+  "greatest-common-divisor-traversal": [
+    "Advanced Graphs"
+  ],
+  "grid-game": [
+    "Arrays & Hashing"
+  ],
+  "group-anagrams": [
+    "Arrays & Hashing"
+  ],
+  "grumpy-bookstore-owner": [
+    "Sliding Window"
+  ],
+  "guess-number-higher-or-lower": [
+    "Binary Search"
+  ],
+  "hand-of-straights": [
+    "Greedy"
+  ],
+  "happy-number": [
+    "Math & Geometry"
+  ],
+  "height-checker": [
+    "Arrays & Hashing"
+  ],
+  "house-robber": [
+    "1-D Dynamic Programming"
+  ],
+  "house-robber-ii": [
+    "1-D Dynamic Programming"
+  ],
+  "house-robber-iii": [
+    "Trees"
+  ],
+  "house-robber-iv": [
+    "Binary Search"
+  ],
+  "image-smoother": [
+    "Math & Geometry"
+  ],
+  "implement-queue-using-stacks": [
+    "Stack"
+  ],
+  "implement-stack-using-queues": [
+    "Stack"
+  ],
+  "implement-trie-prefix-tree": [
+    "Tries"
+  ],
+  "insert-delete-getrandom-o1": [
+    "Arrays & Hashing"
+  ],
+  "insert-greatest-common-divisors-in-linked-list": [
+    "Math & Geometry"
+  ],
+  "insert-interval": [
+    "Intervals"
+  ],
+  "insert-into-a-binary-search-tree": [
+    "Trees"
+  ],
+  "insertion-sort-list": [
+    "Linked List"
+  ],
+  "integer-break": [
+    "1-D Dynamic Programming"
+  ],
+  "integer-to-roman": [
+    "Math & Geometry"
+  ],
+  "interleaving-string": [
+    "2-D Dynamic Programming"
+  ],
+  "intersection-of-two-arrays": [
+    "Arrays & Hashing"
+  ],
+  "intersection-of-two-linked-lists": [
+    "Linked List"
+  ],
+  "invert-binary-tree": [
+    "Trees"
+  ],
+  "ipo": [
+    "Heap / Priority Queue"
+  ],
+  "is-graph-bipartite": [
+    "Graphs"
+  ],
+  "is-subsequence": [
+    "Arrays & Hashing"
+  ],
+  "island-perimeter": [
+    "Graphs"
+  ],
+  "isomorphic-strings": [
+    "Arrays & Hashing"
+  ],
+  "jump-game": [
+    "Greedy"
+  ],
+  "jump-game-ii": [
+    "Greedy"
+  ],
+  "jump-game-vii": [
+    "Greedy"
+  ],
+  "k-closest-points-to-origin": [
+    "Heap / Priority Queue"
+  ],
+  "k-inverse-pairs-array": [
+    "2-D Dynamic Programming"
+  ],
+  "k-th-symbol-in-grammar": [
+    "Two Pointers"
+  ],
+  "knight-dialer": [
+    "1-D Dynamic Programming"
+  ],
+  "koko-eating-bananas": [
+    "Binary Search"
+  ],
+  "kth-distinct-string-in-an-array": [
+    "Arrays & Hashing"
+  ],
+  "kth-largest-element-in-a-stream": [
+    "Heap / Priority Queue"
+  ],
+  "kth-largest-element-in-an-array": [
+    "Heap / Priority Queue"
+  ],
+  "kth-largest-sum-in-a-binary-tree": [
+    "Trees"
+  ],
+  "kth-smallest-element-in-a-bst": [
+    "Trees"
+  ],
+  "largest-3-same-digit-number-in-string": [
+    "Arrays & Hashing"
+  ],
+  "largest-color-value-in-a-directed-graph": [
+    "Graphs"
+  ],
+  "largest-divisible-subset": [
+    "1-D Dynamic Programming"
+  ],
+  "largest-local-values-in-a-matrix": [
+    "Math & Geometry"
+  ],
+  "largest-number": [
+    "Arrays & Hashing"
+  ],
+  "largest-odd-number-in-string": [
+    "Math & Geometry"
+  ],
+  "largest-rectangle-in-histogram": [
+    "Stack"
+  ],
+  "largest-substring-between-two-equal-characters": [
+    "Arrays & Hashing"
+  ],
+  "last-stone-weight": [
+    "Heap / Priority Queue"
+  ],
+  "last-stone-weight-ii": [
+    "2-D Dynamic Programming"
+  ],
+  "leaf-similar-trees": [
+    "Trees"
+  ],
+  "least-number-of-unique-integers-after-k-removals": [
+    "Heap / Priority Queue"
+  ],
+  "lemonade-change": [
+    "Greedy"
+  ],
+  "length-of-last-word": [
+    "Arrays & Hashing"
+  ],
+  "length-of-longest-fibonacci-subsequence": [
+    "2-D Dynamic Programming"
+  ],
+  "length-of-longest-subarray-with-at-most-k-frequency": [
+    "Sliding Window"
+  ],
+  "letter-combinations-of-a-phone-number": [
+    "Backtracking"
+  ],
+  "letter-tile-possibilities": [
+    "Backtracking"
+  ],
+  "lfu-cache": [
+    "Linked List"
+  ],
+  "linked-list-cycle": [
+    "Linked List"
+  ],
+  "linked-list-in-binary-tree": [
+    "Trees"
+  ],
+  "longest-common-prefix": [
+    "Arrays & Hashing"
+  ],
+  "longest-common-subsequence": [
+    "2-D Dynamic Programming"
+  ],
+  "longest-consecutive-sequence": [
+    "Arrays & Hashing"
+  ],
+  "longest-continuous-subarray-with-absolute-diff-less-than-or-equal-to-limit": [
+    "Sliding Window"
+  ],
+  "longest-happy-string": [
+    "Heap / Priority Queue"
+  ],
+  "longest-ideal-subsequence": [
+    "2-D Dynamic Programming"
+  ],
+  "longest-increasing-path-in-a-matrix": [
+    "2-D Dynamic Programming"
+  ],
+  "longest-increasing-subsequence": [
+    "1-D Dynamic Programming"
+  ],
+  "longest-palindrome": [
+    "Arrays & Hashing"
+  ],
+  "longest-palindromic-subsequence": [
+    "2-D Dynamic Programming"
+  ],
+  "longest-palindromic-substring": [
+    "1-D Dynamic Programming"
+  ],
+  "longest-repeating-character-replacement": [
+    "Sliding Window"
+  ],
+  "longest-strictly-increasing-or-strictly-decreasing-subarray": [
+    "Arrays & Hashing"
+  ],
+  "longest-string-chain": [
+    "1-D Dynamic Programming"
+  ],
+  "longest-substring-without-repeating-characters": [
+    "Sliding Window"
+  ],
+  "longest-turbulent-subarray": [
+    "Greedy"
+  ],
+  "lowest-common-ancestor-of-a-binary-search-tree": [
+    "Trees"
+  ],
+  "lru-cache": [
+    "Linked List"
+  ],
+  "lucky-numbers-in-a-matrix": [
+    "Math & Geometry"
+  ],
+  "magic-squares-in-grid": [
+    "Math & Geometry"
+  ],
+  "majority-element": [
+    "Arrays & Hashing"
+  ],
+  "majority-element-ii": [
+    "Arrays & Hashing"
+  ],
+  "make-lexicographically-smallest-array-by-swapping-elements": [
+    "Greedy"
+  ],
+  "make-sum-divisible-by-p": [
+    "Arrays & Hashing"
+  ],
+  "make-the-string-great": [
+    "Stack"
+  ],
+  "make-two-arrays-equal-by-reversing-subarrays": [
+    "Greedy"
+  ],
+  "making-a-large-island": [
+    "Advanced Graphs"
+  ],
+  "matchsticks-to-square": [
+    "Backtracking"
+  ],
+  "matrix-diagonal-sum": [
+    "Math & Geometry"
+  ],
+  "max-area-of-island": [
+    "Graphs"
+  ],
+  "max-chunks-to-make-sorted": [
+    "Greedy"
+  ],
+  "max-points-on-a-line": [
+    "Math & Geometry"
+  ],
+  "maximal-score-after-applying-k-operations": [
+    "Greedy"
+  ],
+  "maximal-square": [
+    "2-D Dynamic Programming"
+  ],
+  "maximize-score-after-n-operations": [
+    "1-D Dynamic Programming"
+  ],
+  "maximum-absolute-sum-of-any-subarray": [
+    "Greedy"
+  ],
+  "maximum-alternating-subsequence-sum": [
+    "2-D Dynamic Programming"
+  ],
+  "maximum-ascending-subarray-sum": [
+    "Arrays & Hashing"
+  ],
+  "maximum-beauty-of-an-array-after-applying-operation": [
+    "Sliding Window"
+  ],
+  "maximum-candies-allocated-to-k-children": [
+    "Binary Search"
+  ],
+  "maximum-depth-of-binary-tree": [
+    "Trees"
+  ],
+  "maximum-distance-in-arrays": [
+    "Arrays & Hashing"
+  ],
+  "maximum-element-after-decreasing-and-rearranging": [
+    "Greedy"
+  ],
+  "maximum-employees-to-be-invited-to-a-meeting": [
+    "Advanced Graphs"
+  ],
+  "maximum-frequency-stack": [
+    "Stack"
+  ],
+  "maximum-length-of-a-concatenated-string-with-unique-characters": [
+    "Backtracking"
+  ],
+  "maximum-length-of-pair-chain": [
+    "Greedy"
+  ],
+  "maximum-matrix-sum": [
+    "Greedy"
+  ],
+  "maximum-nesting-depth-of-the-parentheses": [
+    "Greedy"
+  ],
+  "maximum-number-of-balloons": [
+    "Arrays & Hashing"
+  ],
+  "maximum-number-of-fish-in-a-grid": [
+    "Graphs"
+  ],
+  "maximum-number-of-k-divisible-components": [
+    "Graphs"
+  ],
+  "maximum-number-of-points-from-grid-queries": [
+    "Graphs"
+  ],
+  "maximum-number-of-points-with-cost": [
+    "2-D Dynamic Programming"
+  ],
+  "maximum-number-of-removable-characters": [
+    "Binary Search"
+  ],
+  "maximum-number-of-vowels-in-a-substring-of-given-length": [
+    "Sliding Window"
+  ],
+  "maximum-odd-binary-number": [
+    "Greedy"
+  ],
+  "maximum-performance-of-a-team": [
+    "Heap / Priority Queue"
+  ],
+  "maximum-points-you-can-obtain-from-cards": [
+    "Greedy"
+  ],
+  "maximum-product-difference-between-two-pairs": [
+    "Arrays & Hashing"
+  ],
+  "maximum-product-of-the-length-of-two-palindromic-subsequences": [
+    "Arrays & Hashing"
+  ],
+  "maximum-product-subarray": [
+    "1-D Dynamic Programming"
+  ],
+  "maximum-profit-in-job-scheduling": [
+    "1-D Dynamic Programming"
+  ],
+  "maximum-score-after-splitting-a-string": [
+    "Arrays & Hashing"
+  ],
+  "maximum-score-from-removing-substrings": [
+    "Greedy"
+  ],
+  "maximum-score-of-a-good-subarray": [
+    "Greedy"
+  ],
+  "maximum-score-words-formed-by-letters": [
+    "Backtracking"
+  ],
+  "maximum-subarray": [
+    "Greedy"
+  ],
+  "maximum-subarray-min-product": [
+    "1-D Dynamic Programming"
+  ],
+  "maximum-subsequence-score": [
+    "Heap / Priority Queue"
+  ],
+  "maximum-sum-circular-subarray": [
+    "Greedy"
+  ],
+  "maximum-sum-of-3-non-overlapping-subarrays": [
+    "1-D Dynamic Programming"
+  ],
+  "maximum-sum-of-distinct-subarrays-with-length-k": [
+    "Sliding Window"
+  ],
+  "maximum-swap": [
+    "Greedy"
+  ],
+  "maximum-total-importance-of-roads": [
+    "Greedy"
+  ],
+  "maximum-twin-sum-of-a-linked-list": [
+    "Linked List"
+  ],
+  "maximum-value-of-k-coins-from-piles": [
+    "2-D Dynamic Programming"
+  ],
+  "maximum-width-of-binary-tree": [
+    "Trees"
+  ],
+  "maximum-width-ramp": [
+    "Stack"
+  ],
+  "median-of-two-sorted-arrays": [
+    "Binary Search"
+  ],
+  "meeting-rooms": [
+    "Intervals"
+  ],
+  "meeting-rooms-ii": [
+    "Intervals"
+  ],
+  "meeting-rooms-iii": [
+    "Intervals"
+  ],
+  "merge-in-between-linked-lists": [
+    "Linked List"
+  ],
+  "merge-intervals": [
+    "Intervals"
+  ],
+  "merge-k-sorted-lists": [
+    "Linked List"
+  ],
+  "merge-nodes-in-between-zeros": [
+    "Linked List"
+  ],
+  "merge-sorted-array": [
+    "Two Pointers"
+  ],
+  "merge-strings-alternately": [
+    "Two Pointers"
+  ],
+  "merge-triplets-to-form-target-triplet": [
+    "Greedy"
+  ],
+  "merge-two-2d-arrays-by-summing-values": [
+    "Two Pointers"
+  ],
+  "merge-two-binary-trees": [
+    "Trees"
+  ],
+  "merge-two-sorted-lists": [
+    "Linked List"
+  ],
+  "middle-of-the-linked-list": [
+    "Linked List"
+  ],
+  "min-cost-climbing-stairs": [
+    "1-D Dynamic Programming"
+  ],
+  "min-cost-to-connect-all-points": [
+    "Advanced Graphs"
+  ],
+  "min-stack": [
+    "Stack"
+  ],
+  "minimize-deviation-in-array": [
+    "Heap / Priority Queue"
+  ],
+  "minimize-maximum-of-array": [
+    "Greedy"
+  ],
+  "minimize-the-maximum-difference-of-pairs": [
+    "Binary Search"
+  ],
+  "minimized-maximum-of-products-distributed-to-any-store": [
+    "Binary Search"
+  ],
+  "minimum-add-to-make-parentheses-valid": [
+    "Stack"
+  ],
+  "minimum-changes-to-make-alternating-binary-string": [
+    "Arrays & Hashing"
+  ],
+  "minimum-cost-for-tickets": [
+    "1-D Dynamic Programming"
+  ],
+  "minimum-cost-to-convert-string-i": [
+    "Advanced Graphs"
+  ],
+  "minimum-cost-to-cut-a-stick": [
+    "2-D Dynamic Programming"
+  ],
+  "minimum-cost-to-hire-k-workers": [
+    "Heap / Priority Queue"
+  ],
+  "minimum-cost-to-make-at-least-one-valid-path-in-a-grid": [
+    "Advanced Graphs"
+  ],
+  "minimum-cost-walk-in-weighted-graph": [
+    "Advanced Graphs"
+  ],
+  "minimum-deletions-to-make-character-frequencies-unique": [
+    "Greedy"
+  ],
+  "minimum-deletions-to-make-string-balanced": [
+    "Greedy"
+  ],
+  "minimum-difference-between-highest-and-lowest-of-k-scores": [
+    "Sliding Window"
+  ],
+  "minimum-difference-between-largest-and-smallest-value-in-three-moves": [
+    "Greedy"
+  ],
+  "minimum-difficulty-of-a-job-schedule": [
+    "2-D Dynamic Programming"
+  ],
+  "minimum-distance-between-bst-nodes": [
+    "Trees"
+  ],
+  "minimum-falling-path-sum": [
+    "2-D Dynamic Programming"
+  ],
+  "minimum-falling-path-sum-ii": [
+    "2-D Dynamic Programming"
+  ],
+  "minimum-fuel-cost-to-report-to-the-capital": [
+    "Graphs"
+  ],
+  "minimum-height-trees": [
+    "Graphs"
+  ],
+  "minimum-increment-to-make-array-unique": [
+    "Greedy"
+  ],
+  "minimum-index-of-a-valid-split": [
+    "Arrays & Hashing"
+  ],
+  "minimum-interval-to-include-each-query": [
+    "Intervals"
+  ],
+  "minimum-length-of-string-after-deleting-similar-ends": [
+    "Two Pointers"
+  ],
+  "minimum-length-of-string-after-operations": [
+    "Greedy"
+  ],
+  "minimum-limit-of-balls-in-a-bag": [
+    "Binary Search"
+  ],
+  "minimum-number-of-arrows-to-burst-balloons": [
+    "Intervals"
+  ],
+  "minimum-number-of-changes-to-make-binary-string-beautiful": [
+    "Greedy"
+  ],
+  "minimum-number-of-days-to-disconnect-island": [
+    "Advanced Graphs"
+  ],
+  "minimum-number-of-days-to-eat-n-oranges": [
+    "Graphs"
+  ],
+  "minimum-number-of-flips-to-make-the-binary-string-alternating": [
+    "Sliding Window"
+  ],
+  "minimum-number-of-increments-on-subarrays-to-form-a-target-array": [
+    "Greedy"
+  ],
+  "minimum-number-of-k-consecutive-bit-flips": [
+    "Greedy"
+  ],
+  "minimum-number-of-moves-to-seat-everyone": [
+    "Greedy"
+  ],
+  "minimum-number-of-operations-to-make-array-continuous": [
+    "Sliding Window"
+  ],
+  "minimum-number-of-operations-to-move-all-balls-to-each-box": [
+    "Arrays & Hashing"
+  ],
+  "minimum-number-of-operations-to-sort-a-binary-tree-by-level": [
+    "Trees"
+  ],
+  "minimum-number-of-pushes-to-type-word-ii": [
+    "Greedy"
+  ],
+  "minimum-number-of-removals-to-make-mountain-array": [
+    "1-D Dynamic Programming"
+  ],
+  "minimum-number-of-swaps-to-make-the-string-balanced": [
+    "Arrays & Hashing"
+  ],
+  "minimum-number-of-vertices-to-reach-all-nodes": [
+    "Graphs"
+  ],
+  "minimum-obstacle-removal-to-reach-corner": [
+    "Advanced Graphs"
+  ],
+  "minimum-operations-to-make-binary-array-elements-equal-to-one-i": [
+    "Greedy"
+  ],
+  "minimum-operations-to-reduce-x-to-zero": [
+    "Sliding Window"
+  ],
+  "minimum-path-sum": [
+    "2-D Dynamic Programming"
+  ],
+  "minimum-penalty-for-a-shop": [
+    "Arrays & Hashing"
+  ],
+  "minimum-recolors-to-get-k-consecutive-black-blocks": [
+    "Sliding Window"
+  ],
+  "minimum-score-of-a-path-between-two-cities": [
+    "Graphs"
+  ],
+  "minimum-size-subarray-sum": [
+    "Sliding Window"
+  ],
+  "minimum-string-length-after-removing-substrings": [
+    "Stack"
+  ],
+  "minimum-swaps-to-group-all-1s-together-ii": [
+    "Greedy"
+  ],
+  "minimum-time-to-collect-all-apples-in-a-tree": [
+    "Trees"
+  ],
+  "minimum-time-to-make-rope-colorful": [
+    "Two Pointers"
+  ],
+  "minimum-time-to-repair-cars": [
+    "Binary Search"
+  ],
+  "minimum-time-to-visit-a-cell-in-a-grid": [
+    "Advanced Graphs"
+  ],
+  "minimum-window-substring": [
+    "Sliding Window"
+  ],
+  "monotonic-array": [
+    "Arrays & Hashing"
+  ],
+  "most-beautiful-item-for-each-query": [
+    "Binary Search"
+  ],
+  "most-profitable-path-in-a-tree": [
+    "Graphs"
+  ],
+  "move-zeroes": [
+    "Two Pointers"
+  ],
+  "multiply-strings": [
+    "Math & Geometry"
+  ],
+  "my-calendar-i": [
+    "Intervals"
+  ],
+  "my-calendar-ii": [
+    "Intervals"
+  ],
+  "n-ary-tree-postorder-traversal": [
+    "Trees"
+  ],
+  "n-queens": [
+    "Backtracking"
+  ],
+  "n-queens-ii": [
+    "Backtracking"
+  ],
+  "n-th-tribonacci-number": [
+    "1-D Dynamic Programming"
+  ],
+  "network-delay-time": [
+    "Advanced Graphs"
+  ],
+  "new-21-game": [
+    "1-D Dynamic Programming"
+  ],
+  "next-greater-element-i": [
+    "Arrays & Hashing"
+  ],
+  "non-decreasing-array": [
+    "Arrays & Hashing"
+  ],
+  "non-overlapping-intervals": [
+    "Intervals"
+  ],
+  "number-of-atoms": [
+    "Stack"
+  ],
+  "number-of-closed-islands": [
+    "Graphs"
+  ],
+  "number-of-connected-components-in-an-undirected-graph": [
+    "Graphs"
+  ],
+  "number-of-dice-rolls-with-target-sum": [
+    "2-D Dynamic Programming"
+  ],
+  "number-of-enclaves": [
+    "Graphs"
+  ],
+  "number-of-flowers-in-full-bloom": [
+    "Heap / Priority Queue"
+  ],
+  "number-of-good-leaf-nodes-pairs": [
+    "Trees"
+  ],
+  "number-of-good-pairs": [
+    "Arrays & Hashing"
+  ],
+  "number-of-good-paths": [
+    "Advanced Graphs"
+  ],
+  "number-of-islands": [
+    "Graphs"
+  ],
+  "number-of-laser-beams-in-a-bank": [
+    "Greedy"
+  ],
+  "number-of-longest-increasing-subsequence": [
+    "1-D Dynamic Programming"
+  ],
+  "number-of-music-playlists": [
+    "2-D Dynamic Programming"
+  ],
+  "number-of-pairs-of-interchangeable-rectangles": [
+    "Arrays & Hashing"
+  ],
+  "number-of-senior-citizens": [
+    "Arrays & Hashing"
+  ],
+  "number-of-students-unable-to-eat-lunch": [
+    "Arrays & Hashing"
+  ],
+  "number-of-sub-arrays-of-size-k-and-average-greater-than-or-equal-to-threshold": [
+    "Sliding Window"
+  ],
+  "number-of-sub-arrays-with-odd-sum": [
+    "Arrays & Hashing"
+  ],
+  "number-of-subsequences-that-satisfy-the-given-sum-condition": [
+    "Two Pointers"
+  ],
+  "number-of-substrings-containing-all-three-characters": [
+    "Sliding Window"
+  ],
+  "number-of-ways-to-arrive-at-destination": [
+    "Advanced Graphs"
+  ],
+  "number-of-ways-to-divide-a-long-corridor": [
+    "1-D Dynamic Programming"
+  ],
+  "number-of-ways-to-form-a-target-string-given-a-dictionary": [
+    "2-D Dynamic Programming"
+  ],
+  "number-of-ways-to-rearrange-sticks-with-k-sticks-visible": [
+    "2-D Dynamic Programming"
+  ],
+  "number-of-ways-to-split-array": [
+    "Arrays & Hashing"
+  ],
+  "number-of-ways-to-stay-in-the-same-place-after-some-steps": [
+    "2-D Dynamic Programming"
+  ],
+  "number-of-zero-filled-subarrays": [
+    "Arrays & Hashing"
+  ],
+  "ones-and-zeroes": [
+    "2-D Dynamic Programming"
+  ],
+  "online-stock-span": [
+    "Stack"
+  ],
+  "open-the-lock": [
+    "Graphs"
+  ],
+  "operations-on-tree": [
+    "Trees"
+  ],
+  "optimal-partition-of-string": [
+    "Arrays & Hashing"
+  ],
+  "out-of-boundary-paths": [
+    "2-D Dynamic Programming"
+  ],
+  "pacific-atlantic-water-flow": [
+    "Graphs"
+  ],
+  "paint-house": [
+    "1-D Dynamic Programming"
+  ],
+  "painting-the-walls": [
+    "2-D Dynamic Programming"
+  ],
+  "palindrome-linked-list": [
+    "Linked List"
+  ],
+  "palindrome-number": [
+    "Math & Geometry"
+  ],
+  "palindrome-partitioning": [
+    "Backtracking"
+  ],
+  "palindromic-substrings": [
+    "1-D Dynamic Programming"
+  ],
+  "parallel-courses-iii": [
+    "Graphs"
+  ],
+  "parsing-a-boolean-expression": [
+    "Stack"
+  ],
+  "partition-array-according-to-given-pivot": [
+    "Two Pointers"
+  ],
+  "partition-array-for-maximum-sum": [
+    "1-D Dynamic Programming"
+  ],
+  "partition-equal-subset-sum": [
+    "1-D Dynamic Programming"
+  ],
+  "partition-labels": [
+    "Greedy"
+  ],
+  "partition-list": [
+    "Linked List"
+  ],
+  "partition-to-k-equal-sum-subsets": [
+    "Backtracking"
+  ],
+  "pascals-triangle": [
+    "Arrays & Hashing"
+  ],
+  "pascals-triangle-ii": [
+    "Arrays & Hashing"
+  ],
+  "path-crossing": [
+    "Arrays & Hashing"
+  ],
+  "path-sum": [
+    "Trees"
+  ],
+  "path-with-maximum-gold": [
+    "Graphs"
+  ],
+  "path-with-maximum-probability": [
+    "Advanced Graphs"
+  ],
+  "path-with-minimum-effort": [
+    "Advanced Graphs"
+  ],
+  "perfect-squares": [
+    "1-D Dynamic Programming"
+  ],
+  "permutation-in-string": [
+    "Sliding Window"
+  ],
+  "permutations": [
+    "Backtracking"
+  ],
+  "permutations-ii": [
+    "Backtracking"
+  ],
+  "plus-one": [
+    "Math & Geometry"
+  ],
+  "populating-next-right-pointers-in-each-node": [
+    "Trees"
+  ],
+  "power-of-four": [
+    "Math & Geometry"
+  ],
+  "powx-n": [
+    "Math & Geometry"
+  ],
+  "process-tasks-using-servers": [
+    "Heap / Priority Queue"
+  ],
+  "product-of-array-except-self": [
+    "Arrays & Hashing"
+  ],
+  "profitable-schemes": [
+    "2-D Dynamic Programming"
+  ],
+  "pseudo-palindromic-paths-in-a-binary-tree": [
+    "Trees"
+  ],
+  "push-dominoes": [
+    "Arrays & Hashing"
+  ],
+  "put-marbles-in-bags": [
+    "Greedy"
+  ],
+  "range-sum-of-bst": [
+    "Trees"
+  ],
+  "range-sum-of-sorted-subarray-sums": [
+    "Heap / Priority Queue"
+  ],
+  "range-sum-query-2d-immutable": [
+    "Arrays & Hashing"
+  ],
+  "range-sum-query-immutable": [
+    "Arrays & Hashing"
+  ],
+  "rearrange-array-elements-by-sign": [
+    "Two Pointers"
+  ],
+  "reconstruct-itinerary": [
+    "Advanced Graphs"
+  ],
+  "recover-a-tree-from-preorder-traversal": [
+    "Trees"
+  ],
+  "redistribute-characters-to-make-all-strings-equal": [
+    "Arrays & Hashing"
+  ],
+  "redundant-connection": [
+    "Graphs"
+  ],
+  "regions-cut-by-slashes": [
+    "Graphs"
+  ],
+  "regular-expression-matching": [
+    "2-D Dynamic Programming"
+  ],
+  "relative-sort-array": [
+    "Arrays & Hashing"
+  ],
+  "remove-all-adjacent-duplicates-in-string-ii": [
+    "Stack"
+  ],
+  "remove-colored-pieces-if-both-neighbors-are-the-same-color": [
+    "Greedy"
+  ],
+  "remove-covered-intervals": [
+    "Intervals"
+  ],
+  "remove-duplicates-from-sorted-array": [
+    "Two Pointers"
+  ],
+  "remove-duplicates-from-sorted-array-ii": [
+    "Two Pointers"
+  ],
+  "remove-duplicates-from-sorted-list": [
+    "Linked List"
+  ],
+  "remove-element": [
+    "Arrays & Hashing"
+  ],
+  "remove-k-digits": [
+    "Stack"
+  ],
+  "remove-linked-list-elements": [
+    "Linked List"
+  ],
+  "remove-max-number-of-edges-to-keep-graph-fully-traversable": [
+    "Advanced Graphs"
+  ],
+  "remove-nodes-from-linked-list": [
+    "Linked List"
+  ],
+  "remove-nth-node-from-end-of-list": [
+    "Linked List"
+  ],
+  "remove-sub-folders-from-the-filesystem": [
+    "Tries"
+  ],
+  "removing-stars-from-a-string": [
+    "Stack"
+  ],
+  "reorder-list": [
+    "Linked List"
+  ],
+  "reorder-routes-to-make-all-paths-lead-to-the-city-zero": [
+    "Graphs"
+  ],
+  "reorganize-string": [
+    "Heap / Priority Queue"
+  ],
+  "repeated-dna-sequences": [
+    "Arrays & Hashing"
+  ],
+  "replace-elements-with-greatest-element-on-right-side": [
+    "Arrays & Hashing"
+  ],
+  "restore-ip-addresses": [
+    "Backtracking"
+  ],
+  "reveal-cards-in-increasing-order": [
+    "Greedy"
+  ],
+  "reverse-linked-list": [
+    "Linked List"
+  ],
+  "reverse-linked-list-ii": [
+    "Linked List"
+  ],
+  "reverse-nodes-in-k-group": [
+    "Linked List"
+  ],
+  "reverse-odd-levels-of-binary-tree": [
+    "Trees"
+  ],
+  "reverse-string": [
+    "Two Pointers"
+  ],
+  "reverse-substrings-between-each-pair-of-parentheses": [
+    "Stack"
+  ],
+  "reverse-words-in-a-string-iii": [
+    "Two Pointers"
+  ],
+  "robot-bounded-in-circle": [
+    "Math & Geometry"
+  ],
+  "robot-collisions": [
+    "Stack"
+  ],
+  "roman-to-integer": [
+    "Math & Geometry"
+  ],
+  "rotate-array": [
+    "Two Pointers"
+  ],
+  "rotate-image": [
+    "Math & Geometry"
+  ],
+  "rotate-list": [
+    "Linked List"
+  ],
+  "rotting-oranges": [
+    "Graphs"
+  ],
+  "same-tree": [
+    "Trees"
+  ],
+  "score-after-flipping-matrix": [
+    "Greedy"
+  ],
+  "score-of-a-string": [
+    "Arrays & Hashing"
+  ],
+  "search-a-2d-matrix": [
+    "Binary Search"
+  ],
+  "search-in-rotated-sorted-array": [
+    "Binary Search"
+  ],
+  "search-in-rotated-sorted-array-ii": [
+    "Binary Search"
+  ],
+  "search-insert-position": [
+    "Binary Search"
+  ],
+  "search-suggestions-system": [
+    "Binary Search"
+  ],
+  "seat-reservation-manager": [
+    "Heap / Priority Queue"
+  ],
+  "second-minimum-time-to-reach-destination": [
+    "Advanced Graphs"
+  ],
+  "sentence-similarity-iii": [
+    "Two Pointers"
+  ],
+  "separate-black-and-white-balls": [
+    "Greedy"
+  ],
+  "serialize-and-deserialize-binary-tree": [
+    "Trees"
+  ],
+  "set-matrix-zeroes": [
+    "Math & Geometry"
+  ],
+  "set-mismatch": [
+    "Arrays & Hashing"
+  ],
+  "shift-2d-grid": [
+    "Math & Geometry"
+  ],
+  "shifting-letters-ii": [
+    "Arrays & Hashing"
+  ],
+  "shortest-bridge": [
+    "Graphs"
+  ],
+  "shortest-common-supersequence": [
+    "2-D Dynamic Programming"
+  ],
+  "shortest-distance-after-road-addition-queries-i": [
+    "Graphs"
+  ],
+  "shortest-path-in-binary-matrix": [
+    "Graphs"
+  ],
+  "shortest-path-with-alternating-colors": [
+    "Graphs"
+  ],
+  "shortest-subarray-to-be-removed-to-make-array-sorted": [
+    "Greedy"
+  ],
+  "shortest-subarray-with-sum-at-least-k": [
+    "Stack"
+  ],
+  "sign-of-the-product-of-an-array": [
+    "Arrays & Hashing"
+  ],
+  "simplify-path": [
+    "Stack"
+  ],
+  "single-element-in-a-sorted-array": [
+    "Binary Search"
+  ],
+  "single-threaded-cpu": [
+    "Heap / Priority Queue"
+  ],
+  "sliding-puzzle": [
+    "Graphs"
+  ],
+  "sliding-window-maximum": [
+    "Sliding Window"
+  ],
+  "smallest-range-covering-elements-from-k-lists": [
+    "Sliding Window"
+  ],
+  "smallest-string-starting-from-leaf": [
+    "Trees"
+  ],
+  "snakes-and-ladders": [
+    "Graphs"
+  ],
+  "solving-questions-with-brainpower": [
+    "1-D Dynamic Programming"
+  ],
+  "sort-an-array": [
+    "Arrays & Hashing"
+  ],
+  "sort-array-by-increasing-frequency": [
+    "Arrays & Hashing"
+  ],
+  "sort-array-by-parity": [
+    "Two Pointers"
+  ],
+  "sort-colors": [
+    "Arrays & Hashing"
+  ],
+  "sort-list": [
+    "Linked List"
+  ],
+  "sort-the-people": [
+    "Arrays & Hashing"
+  ],
+  "special-array-i": [
+    "Arrays & Hashing"
+  ],
+  "special-array-with-x-elements-greater-than-or-equal-x": [
+    "Arrays & Hashing"
+  ],
+  "spiral-matrix": [
+    "Math & Geometry"
+  ],
+  "spiral-matrix-ii": [
+    "Math & Geometry"
+  ],
+  "spiral-matrix-iii": [
+    "Math & Geometry"
+  ],
+  "spiral-matrix-iv": [
+    "Math & Geometry"
+  ],
+  "split-a-string-into-the-max-number-of-unique-substrings": [
+    "Backtracking"
+  ],
+  "split-array-largest-sum": [
+    "Binary Search"
+  ],
+  "split-linked-list-in-parts": [
+    "Linked List"
+  ],
+  "splitting-a-string-into-descending-consecutive-values": [
+    "Backtracking"
+  ],
+  "sqrtx": [
+    "Binary Search"
+  ],
+  "squares-of-a-sorted-array": [
+    "Two Pointers"
+  ],
+  "step-by-step-directions-from-a-binary-tree-node-to-another": [
+    "Trees"
+  ],
+  "stickers-to-spell-word": [
+    "1-D Dynamic Programming"
+  ],
+  "stone-game": [
+    "2-D Dynamic Programming"
+  ],
+  "stone-game-ii": [
+    "2-D Dynamic Programming"
+  ],
+  "stone-game-iii": [
+    "1-D Dynamic Programming"
+  ],
+  "string-compression-ii": [
+    "2-D Dynamic Programming"
+  ],
+  "string-matching-in-an-array": [
+    "Arrays & Hashing"
+  ],
+  "student-attendance-record-ii": [
+    "1-D Dynamic Programming"
+  ],
+  "subarray-product-less-than-k": [
+    "Sliding Window"
+  ],
+  "subarray-sum-equals-k": [
+    "Arrays & Hashing"
+  ],
+  "subarray-sums-divisible-by-k": [
+    "Arrays & Hashing"
+  ],
+  "subarrays-with-k-different-integers": [
+    "Sliding Window"
+  ],
+  "subsets": [
+    "Backtracking"
+  ],
+  "subsets-ii": [
+    "Backtracking"
+  ],
+  "subtree-of-another-tree": [
+    "Trees"
+  ],
+  "successful-pairs-of-spells-and-potions": [
+    "Binary Search"
+  ],
+  "sum-of-absolute-differences-in-a-sorted-array": [
+    "Arrays & Hashing"
+  ],
+  "sum-of-all-subset-xor-totals": [
+    "Backtracking"
+  ],
+  "sum-of-prefix-scores-of-strings": [
+    "Tries"
+  ],
+  "sum-of-subarray-minimums": [
+    "Stack"
+  ],
+  "sum-root-to-leaf-numbers": [
+    "Trees"
+  ],
+  "surrounded-regions": [
+    "Graphs"
+  ],
+  "swap-nodes-in-pairs": [
+    "Linked List"
+  ],
+  "swapping-nodes-in-a-linked-list": [
+    "Linked List"
+  ],
+  "swim-in-rising-water": [
+    "Advanced Graphs"
+  ],
+  "symmetric-tree": [
+    "Trees"
+  ],
+  "take-gifts-from-the-richest-pile": [
+    "Heap / Priority Queue"
+  ],
+  "take-k-of-each-character-from-left-and-right": [
+    "Sliding Window"
+  ],
+  "target-sum": [
+    "2-D Dynamic Programming"
+  ],
+  "task-scheduler": [
+    "Heap / Priority Queue"
+  ],
+  "the-k-th-lexicographical-string-of-all-happy-strings-of-length-n": [
+    "Backtracking"
+  ],
+  "the-number-of-beautiful-subsets": [
+    "Backtracking"
+  ],
+  "the-number-of-the-smallest-unoccupied-chair": [
+    "Intervals"
+  ],
+  "time-based-key-value-store": [
+    "Binary Search"
+  ],
+  "time-needed-to-buy-tickets": [
+    "Arrays & Hashing"
+  ],
+  "time-needed-to-inform-all-employees": [
+    "Trees"
+  ],
+  "top-k-frequent-elements": [
+    "Arrays & Hashing"
+  ],
+  "transpose-matrix": [
+    "Math & Geometry"
+  ],
+  "trapping-rain-water": [
+    "Two Pointers"
+  ],
+  "trapping-rain-water-ii": [
+    "Advanced Graphs"
+  ],
+  "triangle": [
+    "1-D Dynamic Programming"
+  ],
+  "trim-a-binary-search-tree": [
+    "Trees"
+  ],
+  "two-city-scheduling": [
+    "Greedy"
+  ],
+  "two-sum": [
+    "Arrays & Hashing"
+  ],
+  "two-sum-ii-input-array-is-sorted": [
+    "Two Pointers"
+  ],
+  "ugly-number": [
+    "Math & Geometry"
+  ],
+  "ugly-number-ii": [
+    "1-D Dynamic Programming"
+  ],
+  "uncommon-words-from-two-sentences": [
+    "Arrays & Hashing"
+  ],
+  "uncrossed-lines": [
+    "1-D Dynamic Programming"
+  ],
+  "unique-binary-search-trees": [
+    "Trees"
+  ],
+  "unique-binary-search-trees-ii": [
+    "Trees"
+  ],
+  "unique-email-addresses": [
+    "Arrays & Hashing"
+  ],
+  "unique-length-3-palindromic-subsequences": [
+    "Arrays & Hashing"
+  ],
+  "unique-paths": [
+    "2-D Dynamic Programming"
+  ],
+  "unique-paths-ii": [
+    "2-D Dynamic Programming"
+  ],
+  "valid-anagram": [
+    "Arrays & Hashing"
+  ],
+  "valid-palindrome": [
+    "Two Pointers"
+  ],
+  "valid-palindrome-ii": [
+    "Two Pointers"
+  ],
+  "valid-parentheses": [
+    "Stack"
+  ],
+  "valid-parenthesis-string": [
+    "Greedy"
+  ],
+  "valid-perfect-square": [
+    "Binary Search"
+  ],
+  "valid-sudoku": [
+    "Arrays & Hashing"
+  ],
+  "valid-word-abbreviation": [
+    "Two Pointers"
+  ],
+  "validate-binary-search-tree": [
+    "Trees"
+  ],
+  "validate-binary-tree-nodes": [
+    "Trees"
+  ],
+  "validate-stack-sequences": [
+    "Stack"
+  ],
+  "verifying-an-alien-dictionary": [
+    "Graphs"
+  ],
+  "walking-robot-simulation": [
+    "Math & Geometry"
+  ],
+  "walls-and-gates": [
+    "Graphs"
+  ],
+  "water-bottles": [
+    "Math & Geometry"
+  ],
+  "wiggle-sort": [
+    "Arrays & Hashing"
+  ],
+  "word-break": [
+    "1-D Dynamic Programming"
+  ],
+  "word-break-ii": [
+    "Backtracking"
+  ],
+  "word-ladder": [
+    "Graphs"
+  ],
+  "word-pattern": [
+    "Arrays & Hashing"
+  ],
+  "word-search": [
+    "Backtracking"
+  ],
+  "word-search-ii": [
+    "Tries"
+  ],
+  "word-subsets": [
+    "Arrays & Hashing"
+  ]
+}
