@@ -1,8 +1,8 @@
-name: Build NeetCode All Map
+name: Update Tag Maps (NC + TUF)
 
 on:
   schedule:
-    - cron: "30 18,6 * * *"
+    - cron: "0 3 * * *"
       timezone: "Asia/Kolkata"
   workflow_dispatch: {}
 
@@ -10,15 +10,14 @@ permissions:
   contents: write
 
 jobs:
-  build-map:
+  update-maps:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 25
 
     steps:
       - name: Checkout
         uses: actions/checkout@v6
         with:
-          ref: main
           fetch-depth: 0
 
       - name: Install uv (and Python)
@@ -33,32 +32,34 @@ jobs:
       - name: Install Playwright browsers
         run: uv run playwright install --with-deps chromium
 
-      - name: Build neetcode_all_map.json (from allNC)
+      - name: Update NC map
+        run: uv run python scripts/update_nc_map.py
+
+      - name: Update TUF map (scrape → fallback)
         env:
-          NEETCODE_DEBUG: "1"
-        run: uv run python build_neetcode_map.py
+          A2Z_JSON_URL: "https://raw.githubusercontent.com/hitarth-gg/CP/refs/heads/main/striver-a2z.json"
+          TUF_MIN_SCRAPE_SLUGS: "100"
+          # TUF_COOKIE: ${{ secrets.TUF_COOKIE }}
+        run: uv run python scripts/update_tuf_map.py
 
       - name: Upload debug artifacts
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: neetcode-debug
+          name: tag-maps-debug
           path: |
-            neetcode_debug.html
-            neetcode_debug.png
-            neetcode_all_map.json
+            artifacts/
+            maps/tuf.json
+            maps/nc_allnc.json
 
-      - name: Commit & push updated map
+      - name: Commit & push if changed
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-
-          git add neetcode_all_map.json
-
+          git add maps/tuf.json maps/nc_allnc.json
           if git diff --cached --quiet; then
-            echo "No changes to commit."
+            echo "No changes."
             exit 0
           fi
-
-          git commit -m "chore: update neetcode_all_map.json [skip ci]"
+          git commit -m "chore: update tag maps [skip ci]"
           git push origin HEAD:main

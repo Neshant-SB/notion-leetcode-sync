@@ -1,4 +1,4 @@
-name: Sync LeetCode → Notion (cookie-free)
+name: Sync LeetCode → Notion
 
 on:
   schedule:
@@ -16,7 +16,7 @@ concurrency:
 jobs:
   sync:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 15
 
     steps:
       - name: Checkout

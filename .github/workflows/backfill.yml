@@ -1,6 +1,9 @@
-name: Backfill Full History → Notion (cookies required)
+name: Backfill LeetCode → Notion
 
 on:
+  schedule:
+    - cron: "0 4 1 * *"
+      timezone: "Asia/Kolkata"
   workflow_dispatch: {}
 
 permissions:
