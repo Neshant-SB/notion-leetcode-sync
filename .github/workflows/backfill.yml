@@ -1,13 +1,7 @@
-name: Backfill LeetCode → Notion
+name: Backfill Full History → Notion (cookies required)
 
 on:
-  schedule:
-    - cron: "0 4 1 * *"
-      timezone: "Asia/Kolkata"
   workflow_dispatch: {}
-
-permissions:
-  contents: read
 
 jobs:
   backfill:
@@ -15,23 +9,23 @@ jobs:
     timeout-minutes: 60
 
     steps:
-      - name: Checkout
-        uses: actions/checkout@v6
+      - uses: actions/checkout@v4
 
-      - name: Install uv (and Python)
-        uses: astral-sh/setup-uv@v8.1.0
+      - uses: actions/setup-python@v5
         with:
-          enable-cache: true
-          python-version: "3.14"
+          python-version: "3.12"
 
       - name: Install deps
-        run: uv sync --locked
+        run: |
+          pip install --upgrade pip
+          pip install requests python-dateutil
 
       - name: Run backfill
         env:
-          NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
-          NOTION_DATABASE_ID: ${{ secrets.NOTION_DATABASE_ID }}
-          LEETCODE_USERNAME: ${{ secrets.LEETCODE_USERNAME }}
-          LEETCODE_SESSION: ${{ secrets.LEETCODE_SESSION }}
-          LEETCODE_CSRF: ${{ secrets.LEETCODE_CSRF }}
-        run: uv run python sync.py backfill --create-missing --fill-dates
+          NOTION_TOKEN:             ${{ secrets.NOTION_TOKEN }}
+          NOTION_DATABASE_ID:       ${{ secrets.NOTION_DATABASE_ID }}
+          NOTION_STATS_DATABASE_ID: ${{ secrets.NOTION_STATS_DATABASE_ID }}
+          LEETCODE_USERNAME:        ${{ secrets.LEETCODE_USERNAME }}
+          LEETCODE_SESSION:         ${{ secrets.LEETCODE_SESSION }}
+          LEETCODE_CSRF:            ${{ secrets.LEETCODE_CSRF }}
+        run: python sync.py backfill --create-missing --fill-dates

@@ -1,39 +1,31 @@
-name: Sync LeetCode → Notion
+name: Sync LeetCode → Notion (cookie-free)
 
 on:
   schedule:
-    - cron: "30 18,6 * * *"
-      timezone: "Asia/Kolkata"
+    - cron: "*/10 * * * *"
   workflow_dispatch: {}
-
-permissions:
-  contents: read
-
-concurrency:
-  group: sync
-  cancel-in-progress: true
 
 jobs:
   sync:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 10
 
     steps:
-      - name: Checkout
-        uses: actions/checkout@v6
+      - uses: actions/checkout@v4
 
-      - name: Install uv (and Python)
-        uses: astral-sh/setup-uv@v8.1.0
+      - uses: actions/setup-python@v5
         with:
-          enable-cache: true
-          python-version: "3.14"
+          python-version: "3.12"
 
       - name: Install deps
-        run: uv sync --locked
+        run: |
+          pip install --upgrade pip
+          pip install requests python-dateutil
 
       - name: Run sync
         env:
-          NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
-          NOTION_DATABASE_ID: ${{ secrets.NOTION_DATABASE_ID }}
-          LEETCODE_USERNAME: ${{ secrets.LEETCODE_USERNAME }}
-        run: uv run python sync.py sync --recent-limit 20
+          NOTION_TOKEN:             ${{ secrets.NOTION_TOKEN }}
+          NOTION_DATABASE_ID:       ${{ secrets.NOTION_DATABASE_ID }}
+          NOTION_STATS_DATABASE_ID: ${{ secrets.NOTION_STATS_DATABASE_ID }}
+          LEETCODE_USERNAME:        ${{ secrets.LEETCODE_USERNAME }}
+        run: python sync.py sync --recent-limit 20
