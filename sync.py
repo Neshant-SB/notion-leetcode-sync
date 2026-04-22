@@ -56,11 +56,11 @@ SP_VALUE   = "Value"         # Number
 SP_UPDATED = "Last Updated"  # Date
 
 # Stat row titles (must match what you created in Notion)
-STAT_CURRENT_STREAK  = "🔥 Current Streak"
-STAT_LONGEST_STREAK  = "🏆 Longest Streak"
-STAT_TOTAL_SOLVED    = "✅ Total Solved"
-STAT_THIS_WEEK       = "📅 Solved This Week"
-STAT_THIS_MONTH      = "📆 Solved This Month"
+STAT_CURRENT_STREAK  = "Current Streak"
+STAT_LONGEST_STREAK  = "Longest Streak"
+STAT_TOTAL_SOLVED    = "Total Solved"
+STAT_THIS_WEEK       = "Solved This Week"
+STAT_THIS_MONTH      = "Solved This Month"
 
 
 # ──────────────────────────────────────────────
@@ -163,7 +163,18 @@ def notion_upsert(token: str, db_id: str, page_id: str | None, props: dict) -> d
             json={"properties": props},
             timeout=60,
         )
-    r.raise_for_status()
+
+    if not r.ok:
+        # ★ Print Notion's actual error body before raising
+        print(
+            f"[notion_upsert] HTTP {r.status_code} error.\n"
+            f"  page_id  : {page_id or '(new page)'}\n"
+            f"  Notion says: {r.text}\n"
+            f"  Properties sent: {json.dumps(list(props.keys()), indent=2)}",
+            file=sys.stderr,
+        )
+        r.raise_for_status()
+
     return r.json()
 
 
@@ -582,6 +593,67 @@ def cmd_backfill(args: argparse.Namespace) -> None:
         print("[backfill] NOTION_STATS_DATABASE_ID not set – skipping stats push.")
 
     print("[backfill] Done.")
+    
+
+def cmd_diagnose(args: argparse.Namespace) -> None:
+    """
+    Prints every property name + type from both databases.
+    Use this to find mismatches between your Notion DB and the constants at
+    the top of sync.py.
+    """
+    notion_token = mustenv("NOTION_TOKEN")
+
+    def print_db_schema(label: str, db_id: str) -> None:
+        if not db_id:
+            print(f"\n[diagnose] {label}: ID not set, skipping.")
+            return
+        r = requests.get(
+            f"{NOTION_API}/databases/{db_id}",
+            headers=notion_headers(notion_token),
+            timeout=60,
+        )
+        r.raise_for_status()
+        data = r.json()
+        print(f"\n[diagnose] ── {label} ──")
+        print(f"           DB title : {data['title'][0]['plain_text'] if data.get('title') else '(unknown)'}")
+        print(f"           DB id    : {db_id}")
+        print(f"           {'Property name':<35} {'Type'}")
+        print(f"           {'-'*35} {'-'*20}")
+        for name, prop in sorted(data["properties"].items()):
+            print(f"           {name:<35} {prop['type']}")
+
+    tracker_db = mustenv("NOTION_DATABASE_ID").replace("-", "")
+    stats_db   = optenv("NOTION_STATS_DATABASE_ID").replace("-", "")
+
+    print_db_schema("TRACKER DB  (NOTION_DATABASE_ID)", tracker_db)
+    print_db_schema("STATS DB    (NOTION_STATS_DATABASE_ID)", stats_db)
+
+    print("\n[diagnose] ── Expected property name constants in sync.py ──")
+    constants = {
+        "Tracker DB": {
+            "P_NAME":       P_NAME,
+            "P_ID":         P_ID,
+            "P_DIFFICULTY": P_DIFFICULTY,
+            "P_STATUS":     P_STATUS,
+            "P_COMPLETED":  P_COMPLETED,
+            "P_CATEGORY":   P_CATEGORY,
+            "P_TOPICS":     P_TOPICS,
+            "P_TAGS":       P_TAGS,
+            "P_SLUG":       P_SLUG,
+            "P_URL":        P_URL,
+        },
+        "Stats DB": {
+            "SP_STAT":    SP_STAT,
+            "SP_VALUE":   SP_VALUE,
+            "SP_UPDATED": SP_UPDATED,
+        },
+    }
+    for db_label, props in constants.items():
+        print(f"\n           {db_label}:")
+        for const, value in props.items():
+            print(f"             {const:<15} = '{value}'")
+
+    print("\n[diagnose] Done. Fix any mismatches by editing the constants at the top of sync.py.")
 
 
 # ──────────────────────────────────────────────
@@ -594,18 +666,19 @@ def main() -> None:
     p_sync = sub.add_parser("sync", help="Cookie-free incremental sync")
     p_sync.add_argument(
         "--recent-limit", type=int, default=20,
-        help="How many recent AC submissions to pull (max LeetCode returns: ~20)",
+        help="How many recent AC submissions to pull (max ~20)",
     )
 
     p_back = sub.add_parser("backfill", help="One-time full history backfill (needs cookies)")
     p_back.add_argument(
         "--create-missing", action="store_true", default=True,
-        help="Create Notion pages for every solved problem (default: True)",
     )
     p_back.add_argument(
         "--fill-dates", action="store_true", default=False,
-        help="Attempt to find the earliest Accepted date for each problem",
     )
+
+    # ★ new
+    sub.add_parser("diagnose", help="Print all Notion DB property names/types to find mismatches")
 
     args = ap.parse_args()
 
@@ -613,6 +686,12 @@ def main() -> None:
         cmd_sync(args)
     elif args.cmd == "backfill":
         cmd_backfill(args)
+    elif args.cmd == "diagnose":
+        cmd_diagnose(args)
+
+
+if __name__ == "__main__":
+    main()
 
 
 if __name__ == "__main__":
