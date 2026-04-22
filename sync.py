@@ -4,13 +4,8 @@ sync.py  –  LeetCode  ➜  Notion tracker  (with streak stats)
 Commands
 --------
 python sync.py sync      --recent-limit 20
-    Cookie-free. Pulls recent Accepted submissions, upserts Notion rows,
-    then recomputes and pushes streak stats.
-
 python sync.py backfill  --create-missing --fill-dates
-    Cookie-required (one-time). Discovers full solve history, sets
-    earliest-AC Completed date for every solved problem,
-    then recomputes and pushes streak stats.
+python sync.py diagnose
 """
 
 import argparse
@@ -18,7 +13,6 @@ import json
 import os
 import sys
 import time
-from collections import defaultdict
 from datetime import date, datetime, timedelta
 from pathlib import Path
 
@@ -28,17 +22,20 @@ from dateutil import tz
 # ──────────────────────────────────────────────
 # Constants
 # ──────────────────────────────────────────────
-NOTION_VERSION  = "2022-06-28"
-NOTION_API      = "https://api.notion.com/v1"
-LC_GRAPHQL      = "https://leetcode.com/graphql"
-NC_MAP_FILE     = "neetcode_all_map.json"
+NOTION_VERSION = "2022-06-28"
+NOTION_API     = "https://api.notion.com/v1"
+LC_GRAPHQL     = "https://leetcode.com/graphql"
+
+# ✅ fixed paths to match maps/ directory
+NC_MAP_FILE  = "maps/nc_allnc.json"
+TUF_MAP_FILE = "maps/tuf.json"
 
 UA = (
     "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 "
     "(KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36"
 )
 
-# ── Tracker DB property names ──
+# ── Tracker DB property names — must match your Notion DB exactly ──
 P_NAME       = "Name"
 P_ID         = "Problem ID"
 P_DIFFICULTY = "Difficulty"
@@ -46,21 +43,22 @@ P_STATUS     = "Status"
 P_COMPLETED  = "Completed date"
 P_CATEGORY   = "Category"
 P_TOPICS     = "Topics"
-P_TAGS       = "Tags"
+P_NC_TAGS    = "NC Tags"    # ✅ fixed
+P_TUF_TAGS   = "TUF Tags"   # ✅ added
 P_SLUG       = "Slug"
 P_URL        = "LeetCode URL"
 
 # ── Stats DB property names ──
-SP_STAT    = "Stat"          # Title
-SP_VALUE   = "Value"         # Number
-SP_UPDATED = "Last Updated"  # Date
+SP_STAT    = "Stat"
+SP_VALUE   = "Value"
+SP_UPDATED = "Last Updated"
 
-# Stat row titles (must match what you created in Notion)
-STAT_CURRENT_STREAK  = "Current Streak"
-STAT_LONGEST_STREAK  = "Longest Streak"
-STAT_TOTAL_SOLVED    = "Total Solved"
-STAT_THIS_WEEK       = "Solved This Week"
-STAT_THIS_MONTH      = "Solved This Month"
+# ── Stat row titles (must match rows you created in Notion) ──
+STAT_CURRENT_STREAK = "Current Streak"
+STAT_LONGEST_STREAK = "Longest Streak"
+STAT_TOTAL_SOLVED   = "Total Solved"
+STAT_THIS_WEEK      = "Solved This Week"
+STAT_THIS_MONTH     = "Solved This Month"
 
 
 # ──────────────────────────────────────────────
@@ -86,7 +84,16 @@ def unix_to_iso(ts: int | str) -> str:
 def load_nc_map() -> dict[str, list[str]]:
     p = Path(NC_MAP_FILE)
     if not p.exists():
-        print(f"[sync] WARNING: {NC_MAP_FILE} not found – Tags will be empty.")
+        print(f"[sync] WARNING: {NC_MAP_FILE} not found – NC Tags will be empty.")
+        return {}
+    with p.open(encoding="utf-8") as fh:
+        return json.load(fh)
+
+
+def load_tuf_map() -> dict[str, list[str]]:   # ✅ new
+    p = Path(TUF_MAP_FILE)
+    if not p.exists():
+        print(f"[sync] WARNING: {TUF_MAP_FILE} not found – TUF Tags will be empty.")
         return {}
     with p.open(encoding="utf-8") as fh:
         return json.load(fh)
@@ -135,7 +142,6 @@ def _date_value(page: dict, prop: str) -> str | None:
 
 
 def notion_index_pages(pages: list[dict]) -> dict[str, dict]:
-    """Returns {slug: {page_id, completed}}"""
     index: dict[str, dict] = {}
     for p in pages:
         slug = _rich_text_value(p, P_SLUG)
@@ -165,12 +171,11 @@ def notion_upsert(token: str, db_id: str, page_id: str | None, props: dict) -> d
         )
 
     if not r.ok:
-        # ★ Print Notion's actual error body before raising
         print(
             f"[notion_upsert] HTTP {r.status_code} error.\n"
-            f"  page_id  : {page_id or '(new page)'}\n"
-            f"  Notion says: {r.text}\n"
-            f"  Properties sent: {json.dumps(list(props.keys()), indent=2)}",
+            f"  page_id     : {page_id or '(new page)'}\n"
+            f"  Notion says : {r.text}\n"
+            f"  Props sent  : {json.dumps(list(props.keys()), indent=2)}",
             file=sys.stderr,
         )
         r.raise_for_status()
@@ -181,9 +186,12 @@ def notion_upsert(token: str, db_id: str, page_id: str | None, props: dict) -> d
 # ──────────────────────────────────────────────
 # LeetCode GraphQL
 # ──────────────────────────────────────────────
-def lc_post(query: str, variables: dict,
-            session: str | None = None,
-            csrf: str | None = None) -> dict:
+def lc_post(
+    query: str,
+    variables: dict,
+    session: str | None = None,
+    csrf: str | None = None,
+) -> dict:
     headers: dict = {"Content-Type": "application/json", "User-Agent": UA}
     cookies = None
     if session and csrf:
@@ -282,9 +290,9 @@ def fetch_all_solved_slugs(session: str, csrf: str) -> list[str]:
     while total is None or skip < total:
         data  = lc_post(_Q_LIST, {
             "categorySlug": "",
-            "skip":   skip,
-            "limit":  limit,
-            "filters": {},
+            "skip":         skip,
+            "limit":        limit,
+            "filters":      {},
         }, session=session, csrf=csrf)
         lst   = data["problemsetQuestionList"]
         total = int(lst["total"])
@@ -302,8 +310,8 @@ def fetch_earliest_ac_date(slug: str, session: str, csrf: str) -> str | None:
     r   = requests.get(
         url,
         headers={
-            "User-Agent": UA,
-            "Referer":    f"https://leetcode.com/problems/{slug}/submissions/",
+            "User-Agent":  UA,
+            "Referer":     f"https://leetcode.com/problems/{slug}/submissions/",
             "x-csrftoken": csrf,
         },
         cookies={"LEETCODE_SESSION": session, "csrftoken": csrf},
@@ -328,30 +336,33 @@ def fetch_earliest_ac_date(slug: str, session: str, csrf: str) -> str | None:
 
 
 # ──────────────────────────────────────────────
-# Notion property builder (tracker DB)
+# Notion property builder
 # ──────────────────────────────────────────────
 def build_props(
     problem:        dict,
     nc_map:         dict[str, list[str]],
+    tuf_map:        dict[str, list[str]],   # ✅ added
     completed_date: str | None,
 ) -> dict:
+    slug   = problem["titleSlug"]
     topics = [
         {"name": t["name"]}
         for t in (problem.get("topicTags") or [])
         if t.get("name")
     ]
 
-    nc_cats = nc_map.get(problem["titleSlug"], [])
-    tags    = [{"name": c} for c in nc_cats]
+    nc_tags  = [{"name": c} for c in nc_map.get(slug, [])]    # ✅ fixed
+    tuf_tags = [{"name": c} for c in tuf_map.get(slug, [])]   # ✅ added
 
     props: dict = {
-        P_NAME:       {"title": [{"text": {"content": problem["title"]}}]},
-        P_ID:         {"number": int(problem["frontendQuestionId"])},
-        P_DIFFICULTY: {"select": {"name": problem["difficulty"]}},
-        P_SLUG:       {"rich_text": [{"text": {"content": problem["titleSlug"]}}]},
-        P_URL:        {"url": f"https://leetcode.com/problems/{problem['titleSlug']}/"},
-        P_TOPICS:     {"multi_select": topics},
-        P_TAGS:       {"multi_select": tags},
+        P_NAME:      {"title": [{"text": {"content": problem["title"]}}]},
+        P_ID:        {"number": int(problem["frontendQuestionId"])},
+        P_DIFFICULTY:{"select": {"name": problem["difficulty"]}},
+        P_SLUG:      {"rich_text": [{"text": {"content": slug}}]},
+        P_URL:       {"url": f"https://leetcode.com/problems/{slug}/"},
+        P_TOPICS:    {"multi_select": topics},
+        P_NC_TAGS:   {"multi_select": nc_tags},    # ✅ fixed
+        P_TUF_TAGS:  {"multi_select": tuf_tags},   # ✅ added
     }
 
     if problem.get("categoryTitle"):
@@ -365,12 +376,13 @@ def build_props(
 
 
 # ──────────────────────────────────────────────
-# Core upsert helper (tracker DB)
+# Core upsert
 # ──────────────────────────────────────────────
 def upsert(
     slug:           str,
     completed_date: str | None,
     nc_map:         dict[str, list[str]],
+    tuf_map:        dict[str, list[str]],   # ✅ added
     notion_token:   str,
     notion_db:      str,
     notion_index:   dict[str, dict],
@@ -381,9 +393,9 @@ def upsert(
         print(f"[sync] SKIP {slug}: could not fetch detail – {exc}")
         return
 
-    existing  = notion_index.get(slug)
-    page_id   = existing["page_id"] if existing else None
-    props     = build_props(problem, nc_map, completed_date)
+    existing = notion_index.get(slug)
+    page_id  = existing["page_id"] if existing else None
+    props    = build_props(problem, nc_map, tuf_map, completed_date)   # ✅ passes tuf_map
 
     # Never overwrite an existing completed date
     if existing and existing.get("completed") and completed_date:
@@ -403,28 +415,23 @@ def upsert(
 
 
 # ──────────────────────────────────────────────
-# ★  Streak + stats computation
+# Stats
 # ──────────────────────────────────────────────
 def compute_stats(notion_index: dict[str, dict]) -> dict[str, int]:
-    """
-    Derive all stats from the completed-date values in notion_index.
-    Returns a dict of stat-name -> int value.
-    """
-    today     = date.today()
-    this_week_start  = today - timedelta(days=today.weekday())   # Monday
+    today            = date.today()
+    this_week_start  = today - timedelta(days=today.weekday())
     this_month_start = today.replace(day=1)
 
-    # Collect all unique solved dates (ignore rows with no completed date)
     solved_dates: set[date] = set()
-    week_count   = 0
-    month_count  = 0
+    week_count  = 0
+    month_count = 0
 
     for info in notion_index.values():
         raw = info.get("completed")
         if not raw:
             continue
         try:
-            d = date.fromisoformat(raw[:10])   # handle "2024-01-15T..." too
+            d = date.fromisoformat(raw[:10])
         except ValueError:
             continue
         solved_dates.add(d)
@@ -433,21 +440,18 @@ def compute_stats(notion_index: dict[str, dict]) -> dict[str, int]:
         if d >= this_month_start:
             month_count += 1
 
-    total_solved = len(notion_index)   # all rows = all ever-solved problems
+    total_solved = len(notion_index)
 
-    # ── Current streak ─────────────────────────────────────────────────────
-    # Start from today. If today has no solve yet, allow yesterday as the
-    # streak anchor (so you don't lose your streak before solving today).
+    # Current streak
     current_streak = 0
     anchor = today if today in solved_dates else today - timedelta(days=1)
-
     if anchor in solved_dates:
         cursor = anchor
         while cursor in solved_dates:
             current_streak += 1
             cursor -= timedelta(days=1)
 
-    # ── Longest streak ──────────────────────────────────────────────────────
+    # Longest streak
     longest_streak = 0
     if solved_dates:
         sorted_dates = sorted(solved_dates)
@@ -469,22 +473,10 @@ def compute_stats(notion_index: dict[str, dict]) -> dict[str, int]:
     }
 
 
-# ──────────────────────────────────────────────
-# ★  Push stats to Notion Stats DB
-# ──────────────────────────────────────────────
-def push_stats(
-    notion_token:  str,
-    stats_db_id:   str,
-    stats:         dict[str, int],
-) -> None:
-    """
-    For each stat row in the Stats DB, patch its Value + Last Updated.
-    Rows must already exist (you create them once manually).
-    """
+def push_stats(notion_token: str, stats_db_id: str, stats: dict[str, int]) -> None:
     today_iso = date.today().isoformat()
+    pages     = notion_query_all(notion_token, stats_db_id)
 
-    # Build an index: stat-title -> page_id
-    pages = notion_query_all(notion_token, stats_db_id)
     stat_index: dict[str, str] = {}
     for p in pages:
         title = _title_value(p, SP_STAT)
@@ -498,15 +490,13 @@ def push_stats(
         if not page_id:
             print(f"[stats] WARNING: row '{stat_name}' not found in Stats DB – skipping.")
             continue
-
-        props = {
-            SP_VALUE:   {"number": value},
-            SP_UPDATED: {"date": {"start": today_iso}},
-        }
         r = requests.patch(
             f"{NOTION_API}/pages/{page_id}",
             headers=headers,
-            json={"properties": props},
+            json={"properties": {
+                SP_VALUE:   {"number": value},
+                SP_UPDATED: {"date": {"start": today_iso}},
+            }},
             timeout=60,
         )
         r.raise_for_status()
@@ -517,11 +507,12 @@ def push_stats(
 # Commands
 # ──────────────────────────────────────────────
 def cmd_sync(args: argparse.Namespace) -> None:
-    notion_token  = mustenv("NOTION_TOKEN")
-    notion_db     = mustenv("NOTION_DATABASE_ID").replace("-", "")
-    stats_db_id   = optenv("NOTION_STATS_DATABASE_ID").replace("-", "")
-    username      = mustenv("LEETCODE_USERNAME")
-    nc_map        = load_nc_map()
+    notion_token = mustenv("NOTION_TOKEN")
+    notion_db    = mustenv("NOTION_DATABASE_ID").replace("-", "")
+    stats_db_id  = optenv("NOTION_STATS_DATABASE_ID").replace("-", "")
+    username     = mustenv("LEETCODE_USERNAME")
+    nc_map       = load_nc_map()
+    tuf_map      = load_tuf_map()   # ✅ added
 
     print("[sync] Querying Notion tracker index …")
     pages        = notion_query_all(notion_token, notion_db)
@@ -535,14 +526,12 @@ def cmd_sync(args: argparse.Namespace) -> None:
     for item in recent:
         slug      = item["titleSlug"]
         completed = unix_to_iso(item["timestamp"])
-        upsert(slug, completed, nc_map, notion_token, notion_db, notion_index)
+        upsert(slug, completed, nc_map, tuf_map, notion_token, notion_db, notion_index)   # ✅
         time.sleep(0.3)
 
-    # ── Recompute and push stats ──────────────────────────────────────────
     if stats_db_id:
         print("[sync] Computing stats …")
-        stats = compute_stats(notion_index)
-        push_stats(notion_token, stats_db_id, stats)
+        push_stats(notion_token, stats_db_id, compute_stats(notion_index))
     else:
         print("[sync] NOTION_STATS_DATABASE_ID not set – skipping stats push.")
 
@@ -550,12 +539,13 @@ def cmd_sync(args: argparse.Namespace) -> None:
 
 
 def cmd_backfill(args: argparse.Namespace) -> None:
-    notion_token  = mustenv("NOTION_TOKEN")
-    notion_db     = mustenv("NOTION_DATABASE_ID").replace("-", "")
-    stats_db_id   = optenv("NOTION_STATS_DATABASE_ID").replace("-", "")
-    session       = mustenv("LEETCODE_SESSION")
-    csrf          = mustenv("LEETCODE_CSRF")
-    nc_map        = load_nc_map()
+    notion_token = mustenv("NOTION_TOKEN")
+    notion_db    = mustenv("NOTION_DATABASE_ID").replace("-", "")
+    stats_db_id  = optenv("NOTION_STATS_DATABASE_ID").replace("-", "")
+    session      = mustenv("LEETCODE_SESSION")
+    csrf         = mustenv("LEETCODE_CSRF")
+    nc_map       = load_nc_map()
+    tuf_map      = load_tuf_map()   # ✅ added
 
     print("[backfill] Querying Notion tracker index …")
     pages        = notion_query_all(notion_token, notion_db)
@@ -569,6 +559,7 @@ def cmd_backfill(args: argparse.Namespace) -> None:
     for slug in solved_slugs:
         existing = notion_index.get(slug)
 
+        # ✅ fixed: skip only when --create-missing is NOT passed AND page exists with date
         if existing and existing.get("completed") and not args.create_missing:
             continue
 
@@ -581,26 +572,19 @@ def cmd_backfill(args: argparse.Namespace) -> None:
                     print(f"[backfill] WARNING: could not get date for {slug}: {exc}")
                 time.sleep(0.4)
 
-        upsert(slug, completed, nc_map, notion_token, notion_db, notion_index)
+        upsert(slug, completed, nc_map, tuf_map, notion_token, notion_db, notion_index)   # ✅
         time.sleep(0.2)
 
-    # ── Recompute and push stats ──────────────────────────────────────────
     if stats_db_id:
         print("[backfill] Computing stats …")
-        stats = compute_stats(notion_index)
-        push_stats(notion_token, stats_db_id, stats)
+        push_stats(notion_token, stats_db_id, compute_stats(notion_index))
     else:
         print("[backfill] NOTION_STATS_DATABASE_ID not set – skipping stats push.")
 
     print("[backfill] Done.")
-    
+
 
 def cmd_diagnose(args: argparse.Namespace) -> None:
-    """
-    Prints every property name + type from both databases.
-    Use this to find mismatches between your Notion DB and the constants at
-    the top of sync.py.
-    """
     notion_token = mustenv("NOTION_TOKEN")
 
     def print_db_schema(label: str, db_id: str) -> None:
@@ -638,7 +622,8 @@ def cmd_diagnose(args: argparse.Namespace) -> None:
             "P_COMPLETED":  P_COMPLETED,
             "P_CATEGORY":   P_CATEGORY,
             "P_TOPICS":     P_TOPICS,
-            "P_TAGS":       P_TAGS,
+            "P_NC_TAGS":    P_NC_TAGS,    # ✅ fixed
+            "P_TUF_TAGS":   P_TUF_TAGS,   # ✅ fixed
             "P_SLUG":       P_SLUG,
             "P_URL":        P_URL,
         },
@@ -664,21 +649,15 @@ def main() -> None:
     sub = ap.add_subparsers(dest="cmd", required=True)
 
     p_sync = sub.add_parser("sync", help="Cookie-free incremental sync")
-    p_sync.add_argument(
-        "--recent-limit", type=int, default=20,
-        help="How many recent AC submissions to pull (max ~20)",
-    )
+    p_sync.add_argument("--recent-limit", type=int, default=20)
 
     p_back = sub.add_parser("backfill", help="One-time full history backfill (needs cookies)")
     p_back.add_argument(
-        "--create-missing", action="store_true", default=True,
+        "--create-missing", action="store_true", default=False   # ✅ fixed
     )
-    p_back.add_argument(
-        "--fill-dates", action="store_true", default=False,
-    )
+    p_back.add_argument("--fill-dates", action="store_true", default=False)
 
-    # ★ new
-    sub.add_parser("diagnose", help="Print all Notion DB property names/types to find mismatches")
+    sub.add_parser("diagnose", help="Print Notion DB property names/types")
 
     args = ap.parse_args()
 
@@ -692,7 +671,4 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-
-
-if __name__ == "__main__":
-    main()
+# ✅ removed duplicate if __name__ block

@@ -2,8 +2,7 @@ name: Update Tag Maps (NC + TUF)
 
 on:
   schedule:
-    - cron: "0 3 * * *"
-      timezone: "Asia/Kolkata"
+    - cron: "30 21 * * *"   # ✅ 3:00 AM IST = 9:30 PM UTC. timezone: key removed (not valid in GHA)
   workflow_dispatch: {}
 
 permissions:
@@ -16,15 +15,15 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v4   # ✅ fixed from v6
         with:
           fetch-depth: 0
 
       - name: Install uv (and Python)
-        uses: astral-sh/setup-uv@v8.1.0
+        uses: astral-sh/setup-uv@v5   # ✅ fixed from v8.1.0
         with:
           enable-cache: true
-          python-version: "3.14"
+          python-version: "3.12"      # ✅ 3.14 is pre-release, use stable 3.12
 
       - name: Install deps
         run: uv sync --locked
@@ -39,7 +38,6 @@ jobs:
         env:
           A2Z_JSON_URL: "https://raw.githubusercontent.com/hitarth-gg/CP/refs/heads/main/striver-a2z.json"
           TUF_MIN_SCRAPE_SLUGS: "100"
-          # TUF_COOKIE: ${{ secrets.TUF_COOKIE }}
         run: uv run python scripts/update_tuf_map.py
 
       - name: Upload debug artifacts
