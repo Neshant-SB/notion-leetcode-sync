@@ -235,15 +235,42 @@ def notion_index_pages(pages: list[dict]) -> dict[str, dict]:
     return index
 
 
-def notion_upsert(token: str, db_id: str, page_id: str | None, props: dict) -> dict:
+def notion_upsert(
+    token: str,
+    db_id: str,
+    page_id: str | None,
+    props: dict,
+    children: list[dict] | None = None,
+) -> dict:
+    """
+    Creates or updates a page row.
+
+    - When creating (page_id is None), we can include page content via `children`.
+    - When updating, Notion doesn't accept `children` here; use block append APIs instead.
+    """
     headers = notion_headers(token)
 
     if page_id is None:
         ds_id = notion_resolve_data_source_id(token, db_id)
-        payload = {"parent": {"data_source_id": ds_id}, "properties": props}
-        r = requests.post(f"{NOTION_API}/pages", headers=headers, json=payload, timeout=60)
+        payload: dict = {"parent": {"data_source_id": ds_id}, "properties": props}
+
+        # Create page WITH content (optional)
+        if children:
+            payload["children"] = children
+
+        r = requests.post(
+            f"{NOTION_API}/pages",
+            headers=headers,
+            json=payload,
+            timeout=60,
+        )
     else:
-        r = requests.patch(f"{NOTION_API}/pages/{page_id}", headers=headers, json={"properties": props}, timeout=60)
+        r = requests.patch(
+            f"{NOTION_API}/pages/{page_id}",
+            headers=headers,
+            json={"properties": props},
+            timeout=60,
+        )
 
     if not r.ok:
         print(
