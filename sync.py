@@ -684,6 +684,7 @@ def upsert(
     notion_token: str,
     notion_db: str,
     notion_index: dict[str, dict],
+    force_body_sync: bool = False,   # ← NEW
 ) -> None:
     try:
         problem = fetch_problem_detail(slug)
@@ -707,8 +708,11 @@ def upsert(
     # - page is new, OR
     # - completed date is newly filled in this run
     # (You can always force re-sync by deleting the toggle block manually.)
-    should_sync_body = (page_id is None) or (completed_date is not None and not existing_completed)
-
+    should_sync_body = (
+        force_body_sync
+        or (page_id is None)
+        or (completed_date is not None and not existing_completed)
+    )
     statement_html = None
     subm_details = None
 
@@ -944,7 +948,7 @@ def cmd_backfill(args: argparse.Namespace) -> None:
                 time.sleep(0.35)
 
         # No submission id here -> body sync will store statement only (no code)
-        upsert(slug, completed, None, nc_map, tuf_map, notion_token, notion_db, notion_index)
+        upsert(slug, completed, None, nc_map, tuf_map, notion_token, notion_db, notion_index, force_body_sync=True)
         time.sleep(0.2)
 
     if stats_db_id:
