@@ -48,17 +48,16 @@ P_TUF_TAGS   = "TUF Tags"   # ✅ added
 P_SLUG       = "Slug"
 P_URL        = "LeetCode URL"
 
-# ── Stats DB property names ──
-SP_STAT    = "Stat"
-SP_VALUE   = "Value"
+# ── Stats DB property names (must match your new pivot DB) ──
+SP_NAME = "Name"  # Title
+SP_CURRENT_STREAK = "Current Streak"
+SP_LONGEST_STREAK = "Longest Streak"
+SP_TOTAL_SOLVED = "Total Solved"
+SP_THIS_WEEK = "Solved This Week"
+SP_THIS_MONTH = "Solved This Month"
 SP_UPDATED = "Last Updated"
 
-# ── Stat row titles (must match rows you created in Notion) ──
-STAT_CURRENT_STREAK = "Current Streak"
-STAT_LONGEST_STREAK = "Longest Streak"
-STAT_TOTAL_SOLVED   = "Total Solved"
-STAT_THIS_WEEK      = "Solved This Week"
-STAT_THIS_MONTH     = "Solved This Month"
+STATS_ROW_NAME = "Stats"  # the single row title in the pivot DB
 
 
 # ──────────────────────────────────────────────
@@ -475,32 +474,42 @@ def compute_stats(notion_index: dict[str, dict]) -> dict[str, int]:
 
 def push_stats(notion_token: str, stats_db_id: str, stats: dict[str, int]) -> None:
     today_iso = date.today().isoformat()
-    pages     = notion_query_all(notion_token, stats_db_id)
 
-    stat_index: dict[str, str] = {}
+    # Find the single "Stats" row
+    pages = notion_query_all(notion_token, stats_db_id)
+    page_id = None
     for p in pages:
-        title = _title_value(p, SP_STAT)
-        if title:
-            stat_index[title] = p["id"]
+        if _title_value(p, SP_NAME) == STATS_ROW_NAME:
+            page_id = p["id"]
+            break
 
-    headers = notion_headers(notion_token)
-
-    for stat_name, value in stats.items():
-        page_id = stat_index.get(stat_name)
-        if not page_id:
-            print(f"[stats] WARNING: row '{stat_name}' not found in Stats DB – skipping.")
-            continue
-        r = requests.patch(
-            f"{NOTION_API}/pages/{page_id}",
-            headers=headers,
-            json={"properties": {
-                SP_VALUE:   {"number": value},
-                SP_UPDATED: {"date": {"start": today_iso}},
-            }},
-            timeout=60,
+    if not page_id:
+        print(
+            f"[stats] ERROR: Could not find Stats DB row with Name='{STATS_ROW_NAME}'.",
+            file=sys.stderr,
         )
+        return
+
+    props = {
+        SP_CURRENT_STREAK: {"number": stats["Current Streak"]},
+        SP_LONGEST_STREAK: {"number": stats["Longest Streak"]},
+        SP_TOTAL_SOLVED: {"number": stats["Total Solved"]},
+        SP_THIS_WEEK: {"number": stats["Solved This Week"]},
+        SP_THIS_MONTH: {"number": stats["Solved This Month"]},
+        SP_UPDATED: {"date": {"start": today_iso}},
+    }
+
+    r = requests.patch(
+        f"{NOTION_API}/pages/{page_id}",
+        headers=notion_headers(notion_token),
+        json={"properties": props},
+        timeout=60,
+    )
+    if not r.ok:
+        print(f"[stats] HTTP {r.status_code}: {r.text}", file=sys.stderr)
         r.raise_for_status()
-        print(f"[stats] {stat_name}: {value}")
+
+    print("[stats] Pivot stats updated.")
 
 
 # ──────────────────────────────────────────────
