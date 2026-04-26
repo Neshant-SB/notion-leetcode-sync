@@ -70,6 +70,54 @@ SYNC_TOGGLE_TITLE = "🔁 LeetCode Sync"
 # ──────────────────────────────────────────────
 # Helpers
 # ──────────────────────────────────────────────
+_DS_CACHE: dict[str, str] = {}
+
+def notion_resolve_data_source_id(notion_token: str, database_or_data_source_id: str) -> str:
+    """
+    Accepts either a database_id (container) OR a data_source_id and returns a data_source_id.
+    Caches results so we don't re-resolve every call.
+    """
+    key = database_or_data_source_id.replace("-", "")
+    if key in _DS_CACHE:
+        return _DS_CACHE[key]
+
+    headers = notion_headers(notion_token)
+
+    # 1) Try treating it as a data_source_id
+    r1 = requests.get(
+        f"{NOTION_API}/data_sources/{database_or_data_source_id}",
+        headers=headers,
+        timeout=60,
+    )
+    if r1.ok:
+        ds_id = r1.json()["id"]
+        _DS_CACHE[key] = ds_id
+        return ds_id
+
+    # 2) Try treating it as a database_id (container) and pick first data source
+    r2 = requests.get(
+        f"{NOTION_API}/databases/{database_or_data_source_id}",
+        headers=headers,
+        timeout=60,
+    )
+    if not r2.ok:
+        print(
+            "[notion_resolve_data_source_id] Could not resolve ID as data_source or database.\n"
+            f"  as data_source: HTTP {r1.status_code}: {r1.text}\n"
+            f"  as database    : HTTP {r2.status_code}: {r2.text}",
+            file=sys.stderr,
+        )
+        r2.raise_for_status()
+
+    db = r2.json()
+    data_sources = db.get("data_sources") or []
+    if not data_sources:
+        raise RuntimeError("Database has no data_sources array (unexpected).")
+
+    ds_id = data_sources[0]["id"]
+    _DS_CACHE[key] = ds_id
+    return ds_id
+
 def mustenv(name: str) -> str:
     v = os.environ.get(name, "").strip()
     if not v:
@@ -129,15 +177,27 @@ def notion_headers(token: str) -> dict:
     }
 
 
-def notion_query_all(token: str, db_id: str) -> list[dict]:
-    url = f"{NOTION_API}/databases/{db_id}/query"
+def notion_query_all(token: str, database_or_data_source_id: str) -> list[dict]:
+    ds_id = notion_resolve_data_source_id(token, database_or_data_source_id)
+
+    url = f"{NOTION_API}/data_sources/{ds_id}/query"
     headers = notion_headers(token)
+
     pages: list[dict] = []
     payload: dict = {"page_size": 100}
 
     while True:
         r = requests.post(url, headers=headers, json=payload, timeout=60)
-        r.raise_for_status()
+        if not r.ok:
+            print(
+                "[notion_query_all] HTTP error querying data source.\n"
+                f"  ds_id : {ds_id}\n"
+                f"  HTTP  : {r.status_code}\n"
+                f"  body  : {r.text}",
+                file=sys.stderr,
+            )
+            r.raise_for_status()
+
         data = r.json()
         pages.extend(data.get("results", []))
         if not data.get("has_more"):
@@ -175,37 +235,15 @@ def notion_index_pages(pages: list[dict]) -> dict[str, dict]:
     return index
 
 
-def notion_upsert(
-    token: str,
-    db_id: str,
-    page_id: str | None,
-    props: dict,
-    children: list[dict] | None = None,
-) -> dict:
-    """
-    Create or update a page row in the tracker DB.
-    When creating, we can include page body content via `children`. <!--citation:2-->
-    """
+def notion_upsert(token: str, db_id: str, page_id: str | None, props: dict) -> dict:
     headers = notion_headers(token)
 
     if page_id is None:
-        payload: dict = {"parent": {"database_id": db_id}, "properties": props}
-        if children:
-            payload["children"] = children
-
-        r = requests.post(
-            f"{NOTION_API}/pages",
-            headers=headers,
-            json=payload,
-            timeout=60,
-        )
+        ds_id = notion_resolve_data_source_id(token, db_id)
+        payload = {"parent": {"data_source_id": ds_id}, "properties": props}
+        r = requests.post(f"{NOTION_API}/pages", headers=headers, json=payload, timeout=60)
     else:
-        r = requests.patch(
-            f"{NOTION_API}/pages/{page_id}",
-            headers=headers,
-            json={"properties": props},
-            timeout=60,
-        )
+        r = requests.patch(f"{NOTION_API}/pages/{page_id}", headers=headers, json={"properties": props}, timeout=60)
 
     if not r.ok:
         print(
