@@ -403,11 +403,16 @@ def upsert(
 
     result = notion_upsert(notion_token, notion_db, page_id, props)
 
+    # Keep local index in sync so stats reflect this run
     if slug not in notion_index:
-        notion_index[slug] = {
-            "page_id":   result["id"],
-            "completed": completed_date,
-        }
+        notion_index[slug] = {"page_id": result["id"], "completed": None}
+
+    # Always ensure we have the page id
+    notion_index[slug]["page_id"] = result["id"]
+
+    # If we just set a completed date and the index didn't have one, update it
+    if completed_date and not notion_index[slug].get("completed"):
+        notion_index[slug]["completed"] = completed_date
 
     action = "updated" if page_id else "created"
     print(f"[sync] {action}: {problem['title']} ({slug})")
@@ -464,11 +469,11 @@ def compute_stats(notion_index: dict[str, dict]) -> dict[str, int]:
         longest_streak = max(longest_streak, run_length)
 
     return {
-        STAT_CURRENT_STREAK: current_streak,
-        STAT_LONGEST_STREAK: longest_streak,
-        STAT_TOTAL_SOLVED:   total_solved,
-        STAT_THIS_WEEK:      week_count,
-        STAT_THIS_MONTH:     month_count,
+        SP_CURRENT_STREAK: current_streak,
+        SP_LONGEST_STREAK: longest_streak,
+        SP_TOTAL_SOLVED:   total_solved,
+        SP_THIS_WEEK:      week_count,
+        SP_THIS_MONTH:     month_count,
     }
 
 
@@ -491,12 +496,12 @@ def push_stats(notion_token: str, stats_db_id: str, stats: dict[str, int]) -> No
         return
 
     props = {
-        SP_CURRENT_STREAK: {"number": stats["Current Streak"]},
-        SP_LONGEST_STREAK: {"number": stats["Longest Streak"]},
-        SP_TOTAL_SOLVED: {"number": stats["Total Solved"]},
-        SP_THIS_WEEK: {"number": stats["Solved This Week"]},
-        SP_THIS_MONTH: {"number": stats["Solved This Month"]},
-        SP_UPDATED: {"date": {"start": today_iso}},
+        SP_CURRENT_STREAK: {"number": stats[SP_CURRENT_STREAK]},
+        SP_LONGEST_STREAK: {"number": stats[SP_LONGEST_STREAK]},
+        SP_TOTAL_SOLVED:   {"number": stats[SP_TOTAL_SOLVED]},
+        SP_THIS_WEEK:      {"number": stats[SP_THIS_WEEK]},
+        SP_THIS_MONTH:     {"number": stats[SP_THIS_MONTH]},
+        SP_UPDATED:        {"date": {"start": today_iso}},
     }
 
     r = requests.patch(
@@ -637,9 +642,14 @@ def cmd_diagnose(args: argparse.Namespace) -> None:
             "P_URL":        P_URL,
         },
         "Stats DB": {
-            "SP_STAT":    SP_STAT,
-            "SP_VALUE":   SP_VALUE,
-            "SP_UPDATED": SP_UPDATED,
+            "SP_NAME":           SP_NAME,
+            "SP_CURRENT_STREAK": SP_CURRENT_STREAK,
+            "SP_LONGEST_STREAK": SP_LONGEST_STREAK,
+            "SP_TOTAL_SOLVED":   SP_TOTAL_SOLVED,
+            "SP_THIS_WEEK":      SP_THIS_WEEK,
+            "SP_THIS_MONTH":     SP_THIS_MONTH,
+            "SP_UPDATED":        SP_UPDATED,
+            "STATS_ROW_NAME":    STATS_ROW_NAME,
         },
     }
     for db_label, props in constants.items():
