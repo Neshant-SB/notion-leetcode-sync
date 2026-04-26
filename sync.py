@@ -72,7 +72,7 @@ SP_UPDATED = "Last Updated"           # Date
 STATS_ROW_NAME = "Stats"
 
 # ── Page body managed section (directly on page, no toggle) ──
-SYNC_SECTION_TITLE = "LeetCode (synced)"
+SYNC_SECTION_TITLE = "LeetCode Question"
 SYNC_SECTION_ICON = "📌"   # visible but small; change if you want
 
 # ──────────────────────────────────────────────
