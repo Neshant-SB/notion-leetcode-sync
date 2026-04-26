@@ -20,7 +20,7 @@ jobs:
       - name: Install deps
         run: |
           pip install --upgrade pip
-          pip install requests python-dateutil
+          pip install requests python-dateutil beautifulsoup4
 
       - name: Run sync
         env:
