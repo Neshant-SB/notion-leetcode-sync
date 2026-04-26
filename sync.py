@@ -1,9 +1,10 @@
 """
 sync.py  –  LeetCode ➜ Notion tracker
+
+Features:
 - Sync tracker properties (ID, difficulty, topics, tags, completed date, etc.)
 - Maintain pivot Stats DB row (streak, totals)
-- Store FULL problem statement in the Notion page body (directly, no toggle)
-- Store latest accepted solution code ONLY if it can be fetched WITHOUT cookies
+- Store FULL problem statement in the Notion page body (directly; no toggle)
 - Overwrite only a managed "synced section" each time (keeps your notes untouched)
 
 Commands
@@ -23,7 +24,6 @@ import sys
 import time
 from datetime import date, datetime, timedelta
 from pathlib import Path
-from typing import Any
 
 import requests
 from bs4 import BeautifulSoup
@@ -58,9 +58,6 @@ P_TUF_TAGS = "TUF Tags"
 P_SLUG = "Slug"
 P_URL = "LeetCode URL"
 
-# Optional but recommended to avoid rewriting the same pages every schedule run
-P_LAST_AC_ID = "Last AC Submission ID"  # Number
-
 # ── Stats pivot DB property names — must match your Stats DB exactly ──
 SP_NAME = "Name"  # Title
 SP_CURRENT_STREAK = "Current Streak"  # Number
@@ -71,16 +68,15 @@ SP_THIS_MONTH = "Solved This Month"   # Number
 SP_UPDATED = "Last Updated"           # Date
 STATS_ROW_NAME = "Stats"
 
-# ── Page body managed section (directly on page, no toggle) ──
-SYNC_SECTION_TITLE = "LeetCode Question"
-SYNC_SECTION_ICON = "📌"   # visible but small; change if you want
+# ── Page body managed section: a Callout block (visible, not collapsible) ──
+SYNC_SECTION_TITLE = "LeetCode (synced)"
+SYNC_SECTION_ICON = "📌"
 
 # ──────────────────────────────────────────────
 # Notion: Data source resolver (newer Notion API model)
 # ──────────────────────────────────────────────
 _DS_CACHE: dict[str, str] = {}
 _TRACKER_PROP_NAMES: set[str] = set()
-_STATS_PROP_NAMES: set[str] = set()
 
 
 def mustenv(name: str) -> str:
@@ -161,14 +157,10 @@ def notion_get_data_source_schema(notion_token: str, database_or_data_source_id:
     return r.json()
 
 
-def init_prop_names(notion_token: str, tracker_db_id: str, stats_db_id: str | None) -> None:
-    global _TRACKER_PROP_NAMES, _STATS_PROP_NAMES
-    tracker_schema = notion_get_data_source_schema(notion_token, tracker_db_id)
-    _TRACKER_PROP_NAMES = set((tracker_schema.get("properties") or {}).keys())
-
-    if stats_db_id:
-        stats_schema = notion_get_data_source_schema(notion_token, stats_db_id)
-        _STATS_PROP_NAMES = set((stats_schema.get("properties") or {}).keys())
+def init_tracker_prop_names(notion_token: str, tracker_db_id: str) -> None:
+    global _TRACKER_PROP_NAMES
+    schema = notion_get_data_source_schema(notion_token, tracker_db_id)
+    _TRACKER_PROP_NAMES = set((schema.get("properties") or {}).keys())
 
 
 # ──────────────────────────────────────────────
@@ -200,13 +192,6 @@ def chunk_str(s: str, n: int = 1800) -> list[str]:
     if s:
         out.append(s)
     return out
-
-
-def _number_value(page: dict, prop: str) -> int | None:
-    p = page.get("properties", {}).get(prop)
-    if not p:
-        return None
-    return p.get("number")
 
 
 # ──────────────────────────────────────────────
@@ -258,7 +243,7 @@ def _date_value(page: dict, prop: str) -> str | None:
 
 
 def notion_index_pages(pages: list[dict]) -> dict[str, dict]:
-    """Returns {slug: {page_id, completed, last_ac_id}}"""
+    """Returns {slug: {page_id, completed}}"""
     index: dict[str, dict] = {}
     for p in pages:
         slug = _rich_text_value(p, P_SLUG)
@@ -266,7 +251,6 @@ def notion_index_pages(pages: list[dict]) -> dict[str, dict]:
             index[slug] = {
                 "page_id": p["id"],
                 "completed": _date_value(p, P_COMPLETED),
-                "last_ac_id": _number_value(p, P_LAST_AC_ID),
             }
     return index
 
@@ -369,7 +353,6 @@ def clear_block_children(notion_token: str, block_id: str) -> None:
 
 
 def append_children_in_chunks(notion_token: str, block_id: str, children: list[dict]) -> None:
-    # keep margin under 100
     CHUNK = 90
     for i in range(0, len(children), CHUNK):
         notion_append_children(notion_token, block_id, children[i : i + CHUNK])
@@ -484,20 +467,6 @@ query questionContent($titleSlug: String!) {
 }
 """
 
-# Best-effort ONLY (no cookies). If it requires auth, we return None and store question only.
-_Q_SUBMISSION_DETAILS = """
-query submissionDetails($submissionId: Int!) {
-  submissionDetails(submissionId: $submissionId) {
-    code
-    runtimeDisplay
-    memoryDisplay
-    timestamp
-    statusCode
-    lang { name verboseName }
-  }
-}
-"""
-
 
 def fetch_recent_ac(username: str, limit: int) -> list[dict]:
     data = lc_post(_Q_RECENT_AC, {"username": username, "limit": limit})
@@ -579,37 +548,17 @@ def fetch_question_statement_html(slug: str) -> str | None:
     return q.get("content") if q else None
 
 
-def try_fetch_submission_details_public(submission_id: int) -> dict | None:
-    try:
-        data = lc_post(_Q_SUBMISSION_DETAILS, {"submissionId": int(submission_id)})
-        subm = data.get("submissionDetails")
-        # Require code to consider it useful
-        if subm and (subm.get("code") or "").strip():
-            return subm
-        return None
-    except Exception:
-        return None
-
-
 # ──────────────────────────────────────────────
-# LeetCode HTML → Notion blocks (fixes the formatting issues you showed)
+# LeetCode HTML → Notion blocks (fix formatting: exponents + inline code)
 # ──────────────────────────────────────────────
 def _norm_ws(s: str) -> str:
-    # Keep newlines; normalize other whitespace to single spaces
     s = s.replace("\u00a0", " ")
     s = s.replace("\r\n", "\n").replace("\r", "\n")
     s = re.sub(r"[ \t\f\v]+", " ", s)
     return s
 
 
-def _rt(
-    text: str,
-    *,
-    bold: bool = False,
-    italic: bool = False,
-    code: bool = False,
-    link: str | None = None,
-) -> dict:
+def _rt(text: str, *, bold: bool = False, italic: bool = False, code: bool = False, link: str | None = None) -> dict:
     text = _norm_ws(text)
     obj = {
         "type": "text",
@@ -635,7 +584,7 @@ def _split_rich_text_item(item: dict, limit: int = 1800) -> list[dict]:
     parts = chunk_str(content, limit)
     out = []
     for p in parts:
-        x = json.loads(json.dumps(item))  # deep copy
+        x = json.loads(json.dumps(item))
         x["text"]["content"] = p
         out.append(x)
     return out
@@ -658,7 +607,6 @@ def _merge_rich_text(parts: list[dict]) -> list[dict]:
         else:
             out.append(p)
 
-    # Split overly long items
     final: list[dict] = []
     for it in out:
         final.extend(_split_rich_text_item(it))
@@ -690,7 +638,6 @@ def _inline_rich_text(node: Tag, *, bold=False, italic=False, code=False, link: 
 
 def _normalize_lc_html(html: str) -> BeautifulSoup:
     soup = BeautifulSoup(html or "", "html.parser")
-
     for t in soup(["script", "style"]):
         t.decompose()
 
@@ -704,9 +651,6 @@ def _normalize_lc_html(html: str) -> BeautifulSoup:
 
 
 def lc_html_to_notion_blocks(html: str) -> list[dict]:
-    """
-    Converts LeetCode statement HTML into Notion blocks preserving inline code/bold/italic and exponents.
-    """
     soup = _normalize_lc_html(html)
     blocks: list[dict] = []
 
@@ -716,8 +660,7 @@ def lc_html_to_notion_blocks(html: str) -> list[dict]:
         if not plain:
             return
 
-        # Chunk if huge: convert to multiple paragraph blocks (loses some inline formatting across chunk boundaries,
-        # but avoids Notion limits). Usually not needed for LC statements.
+        # If huge, fall back to plain chunked paragraphs
         if len(plain) > 1900:
             for part in chunk_str(plain, 1800):
                 blocks.append({"object": "block", "type": "paragraph", "paragraph": {"rich_text": [_rt(part)]}})
@@ -725,27 +668,19 @@ def lc_html_to_notion_blocks(html: str) -> list[dict]:
 
         blocks.append({"object": "block", "type": "paragraph", "paragraph": {"rich_text": rts}})
 
-    def add_heading(tag: Tag, level: int) -> None:
-        rts = _inline_rich_text(tag)
-        text = "".join((x.get("text") or {}).get("content", "") for x in rts).strip()
+    def add_heading_text(text: str, level: int) -> None:
+        text = text.strip()
         if not text:
             return
         t = "heading_2" if level == 2 else "heading_3"
         blocks.append({"object": "block", "type": t, t: {"rich_text": [_rt(text, bold=True)]}})
 
     def add_pre(tag: Tag) -> None:
-        txt = tag.get_text("\n")
-        txt = txt.replace("\u00a0", " ").strip()
+        txt = tag.get_text("\n").replace("\u00a0", " ").strip()
         if not txt:
             return
         for part in chunk_str(txt, 1800):
-            blocks.append(
-                {
-                    "object": "block",
-                    "type": "code",
-                    "code": {"rich_text": [_rt(part)], "language": "plain text"},
-                }
-            )
+            blocks.append({"object": "block", "type": "code", "code": {"rich_text": [_rt(part)], "language": "plain text"}})
 
     def add_list(tag: Tag, ordered: bool) -> None:
         block_type = "numbered_list_item" if ordered else "bulleted_list_item"
@@ -769,24 +704,16 @@ def lc_html_to_notion_blocks(html: str) -> list[dict]:
                 elif name == "ol":
                     add_list(ch, ordered=True)
                 elif name in ("h1", "h2"):
-                    add_heading(ch, level=2)
+                    add_heading_text(ch.get_text(" ", strip=True), level=2)
                 elif name in ("h3", "h4"):
-                    add_heading(ch, level=3)
+                    add_heading_text(ch.get_text(" ", strip=True), level=3)
                 elif name == "hr":
                     blocks.append({"object": "block", "type": "divider", "divider": {}})
                 else:
-                    # descend until we find block-level tags
                     walk(ch)
 
-            # safety
             if len(blocks) > 350:
-                blocks.append(
-                    {
-                        "object": "block",
-                        "type": "paragraph",
-                        "paragraph": {"rich_text": [_rt("(Truncated: statement too long for sync limits.)")]},
-                    }
-                )
+                blocks.append({"object": "block", "type": "paragraph", "paragraph": {"rich_text": [_rt("(Truncated: statement too long for sync limits.)")]}})
                 return
 
     walk(soup)
@@ -794,64 +721,36 @@ def lc_html_to_notion_blocks(html: str) -> list[dict]:
 
 
 # ──────────────────────────────────────────────
-# Page body sync (direct, no toggle): overwrite callout children each time
+# Page body sync: overwrite callout children each time
 # ──────────────────────────────────────────────
-def build_synced_section_children(slug: str, statement_html: str | None, subm: dict | None) -> list[dict]:
+def build_synced_section_children(slug: str, statement_html: str | None) -> list[dict]:
     kids: list[dict] = []
 
-    # Link
     kids.append({"object": "block", "type": "bookmark", "bookmark": {"url": f"https://leetcode.com/problems/{slug}/"}})
-
-    # Statement header + content
     kids.append({"object": "block", "type": "heading_2", "heading_2": {"rich_text": [_rt("Statement", bold=True)]}})
 
     if statement_html:
         kids.extend(lc_html_to_notion_blocks(statement_html))
     else:
-        kids.append(
-            {"object": "block", "type": "paragraph", "paragraph": {"rich_text": [_rt("Statement not available.")]}}
-        )
-
-    # Latest Accepted (public only)
-    if subm and (subm.get("code") or "").strip():
-        kids.append(
-            {
-                "object": "block",
-                "type": "heading_2",
-                "heading_2": {"rich_text": [_rt("Latest Accepted Solution (public)", bold=True)]},
-            }
-        )
-        lang = (subm.get("lang") or {}).get("verboseName") or (subm.get("lang") or {}).get("name") or "unknown"
-        meta = f"lang={lang} | runtime={subm.get('runtimeDisplay')} | memory={subm.get('memoryDisplay')}"
-        kids.append({"object": "block", "type": "paragraph", "paragraph": {"rich_text": [_rt(meta)]}})
-
-        code = subm.get("code") or ""
-        for part in chunk_str(code, 1800)[:80]:
-            kids.append({"object": "block", "type": "code", "code": {"rich_text": [_rt(part)], "language": "plain text"}})
+        kids.append({"object": "block", "type": "paragraph", "paragraph": {"rich_text": [_rt("Statement not available.")]}})
 
     return kids
 
 
-def overwrite_synced_section(
-    notion_token: str,
-    page_id: str,
-    slug: str,
-    statement_html: str | None,
-    subm: dict | None,
-) -> None:
+def overwrite_synced_section(notion_token: str, page_id: str, slug: str, statement_html: str | None) -> None:
     callout = ensure_sync_callout(notion_token, page_id)
     callout_id = callout["id"]
 
     clear_block_children(notion_token, callout_id)
 
-    kids = build_synced_section_children(slug, statement_html, subm)
+    kids = build_synced_section_children(slug, statement_html)
     append_children_in_chunks(notion_token, callout_id, kids)
 
 
 # ──────────────────────────────────────────────
 # Build Notion properties
 # ──────────────────────────────────────────────
-def build_props(problem: dict, nc_map: dict[str, list[str]], tuf_map: dict[str, list[str]], completed_date: str | None, ac_submission_id: int | None) -> dict:
+def build_props(problem: dict, nc_map: dict[str, list[str]], tuf_map: dict[str, list[str]], completed_date: str | None) -> dict:
     slug = problem["titleSlug"]
 
     topics = [{"name": t["name"]} for t in (problem.get("topicTags") or []) if t.get("name")]
@@ -875,10 +774,6 @@ def build_props(problem: dict, nc_map: dict[str, list[str]], tuf_map: dict[str, 
     if completed_date:
         props[P_COMPLETED] = {"date": {"start": completed_date}}
         props[P_STATUS] = {"status": {"name": "Done"}}
-
-    # only set if the property exists in your DB schema
-    if ac_submission_id is not None and P_LAST_AC_ID in _TRACKER_PROP_NAMES:
-        props[P_LAST_AC_ID] = {"number": int(ac_submission_id)}
 
     return props
 
@@ -940,13 +835,9 @@ def compute_stats(notion_index: dict[str, dict]) -> dict[str, int]:
     }
 
 
-def push_stats(notion_token: str, stats_db_id: str, stats: dict[str, int]) -> None:
+def push_stats(notion_token: str, stats_db_id: str | None, stats: dict[str, int]) -> None:
     if not stats_db_id:
         return
-
-    if not _STATS_PROP_NAMES:
-        # if init_prop_names wasn't called with stats DB, this remains empty
-        pass
 
     today_iso = date.today().isoformat()
 
@@ -989,7 +880,6 @@ def push_stats(notion_token: str, stats_db_id: str, stats: dict[str, int]) -> No
 def upsert(
     slug: str,
     completed_date: str | None,
-    accepted_submission_id: int | None,
     nc_map: dict[str, list[str]],
     tuf_map: dict[str, list[str]],
     notion_token: str,
@@ -1006,9 +896,8 @@ def upsert(
     existing = notion_index.get(slug)
     page_id = existing["page_id"] if existing else None
     existing_completed = existing.get("completed") if existing else None
-    existing_last_ac = existing.get("last_ac_id") if existing else None
 
-    props = build_props(problem, nc_map, tuf_map, completed_date, accepted_submission_id)
+    props = build_props(problem, nc_map, tuf_map, completed_date)
 
     # Never overwrite an existing completed date
     if existing_completed and completed_date:
@@ -1017,34 +906,25 @@ def upsert(
 
     result = notion_upsert(notion_token, notion_db, page_id, props)
 
-    # Update in-memory index for stats + AC-id comparisons
+    # Update in-memory index for stats
     if slug not in notion_index:
-        notion_index[slug] = {"page_id": result["id"], "completed": None, "last_ac_id": None}
+        notion_index[slug] = {"page_id": result["id"], "completed": None}
     notion_index[slug]["page_id"] = result["id"]
     if completed_date and not notion_index[slug].get("completed"):
         notion_index[slug]["completed"] = completed_date
-    if accepted_submission_id is not None:
-        notion_index[slug]["last_ac_id"] = accepted_submission_id
 
-    # Decide whether to overwrite synced section
-    # - backfill forces it for every solved problem
-    # - sync runs: update when AC submission id changed (if we can track it), otherwise still update
-    #   for recently-seen slugs (best effort)
+    # Overwrite synced section
     should_sync_body = (
         force_body_sync
         or (page_id is None)
         or (completed_date is not None and not existing_completed)
-        or (accepted_submission_id is not None and (existing_last_ac is None or accepted_submission_id != existing_last_ac))
+        or (find_sync_callout_block(notion_token, result["id"]) is None)
     )
 
     if should_sync_body:
         try:
             statement_html = fetch_question_statement_html(slug)
-
-            # IMPORTANT: per your NOTE, we do NOT send cookies. This is best-effort.
-            subm = try_fetch_submission_details_public(accepted_submission_id) if accepted_submission_id else None
-
-            overwrite_synced_section(notion_token, result["id"], slug, statement_html, subm)
+            overwrite_synced_section(notion_token, result["id"], slug, statement_html)
         except Exception as e:
             print(f"[page] WARNING: failed to overwrite synced section for {slug}: {e}", file=sys.stderr)
 
@@ -1061,7 +941,7 @@ def cmd_sync(args: argparse.Namespace) -> None:
     stats_db_id = optenv("NOTION_STATS_DATABASE_ID").replace("-", "") or None
     username = mustenv("LEETCODE_USERNAME")
 
-    init_prop_names(notion_token, notion_db, stats_db_id)
+    init_tracker_prop_names(notion_token, notion_db)
 
     nc_map = load_json_map(NC_MAP_FILE)
     tuf_map = load_json_map(TUF_MAP_FILE)
@@ -1084,13 +964,17 @@ def cmd_sync(args: argparse.Namespace) -> None:
         seen.add(slug)
 
         completed = unix_to_iso(item["timestamp"])
-        sub_id = None
-        try:
-            sub_id = int(item["id"])
-        except Exception:
-            sub_id = None
 
-        upsert(slug, completed, sub_id, nc_map, tuf_map, notion_token, notion_db, notion_index, force_body_sync=False)
+        upsert(
+            slug=slug,
+            completed_date=completed,
+            nc_map=nc_map,
+            tuf_map=tuf_map,
+            notion_token=notion_token,
+            notion_db=notion_db,
+            notion_index=notion_index,
+            force_body_sync=False,
+        )
         time.sleep(0.25)
 
     if stats_db_id:
@@ -1111,7 +995,7 @@ def cmd_backfill(args: argparse.Namespace) -> None:
     session = mustenv("LEETCODE_SESSION")
     csrf = mustenv("LEETCODE_CSRF")
 
-    init_prop_names(notion_token, notion_db, stats_db_id)
+    init_tracker_prop_names(notion_token, notion_db)
 
     nc_map = load_json_map(NC_MAP_FILE)
     tuf_map = load_json_map(TUF_MAP_FILE)
@@ -1140,8 +1024,17 @@ def cmd_backfill(args: argparse.Namespace) -> None:
                 print(f"[backfill] WARNING: could not get date for {slug}: {exc}")
             time.sleep(0.35)
 
-        # backfill has no submission id in this flow -> question only, but still hydrates page bodies (force_body_sync=True)
-        upsert(slug, completed, None, nc_map, tuf_map, notion_token, notion_db, notion_index, force_body_sync=True)
+        # force_body_sync=True => hydrate page bodies for EVERY solved problem
+        upsert(
+            slug=slug,
+            completed_date=completed,
+            nc_map=nc_map,
+            tuf_map=tuf_map,
+            notion_token=notion_token,
+            notion_db=notion_db,
+            notion_index=notion_index,
+            force_body_sync=True,
+        )
         time.sleep(0.25)
 
     if stats_db_id:
@@ -1159,7 +1052,6 @@ def cmd_diagnose(args: argparse.Namespace) -> None:
     tracker_db = mustenv("NOTION_DATABASE_ID").replace("-", "")
     stats_db = optenv("NOTION_STATS_DATABASE_ID").replace("-", "") or None
 
-    # Show data source ids
     tracker_ds = notion_resolve_data_source_id(notion_token, tracker_db)
     stats_ds = notion_resolve_data_source_id(notion_token, stats_db) if stats_db else None
 
@@ -1170,16 +1062,15 @@ def cmd_diagnose(args: argparse.Namespace) -> None:
         print(f"  stats input id   : {stats_db}")
         print(f"  stats ds id      : {stats_ds}")
 
-    # Show tracker properties from data source schema
     t_schema = notion_get_data_source_schema(notion_token, tracker_db)
     print("\n[diagnose] TRACKER data source properties")
-    for name, prop in sorted((t_schema.get("properties") or {}).items()):
+    for name, prop in sorted((t_schema.get('properties') or {}).items()):
         print(f"  {name:<30} {prop.get('type')}")
 
     if stats_db:
         s_schema = notion_get_data_source_schema(notion_token, stats_db)
         print("\n[diagnose] STATS data source properties")
-        for name, prop in sorted((s_schema.get("properties") or {}).items()):
+        for name, prop in sorted((s_schema.get('properties') or {}).items()):
             print(f"  {name:<30} {prop.get('type')}")
 
     print("\n[diagnose] Done.")
